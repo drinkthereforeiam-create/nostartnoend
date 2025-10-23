@@ -142,14 +142,15 @@
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     
+		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 		const firebaseConfig = {
-	  	apiKey: "AIzaSyBHw_5ApaAa6N18ym4QnzJwmoxWRP3M4Ac",
-	  	authDomain: "nostartnoendhk-11a6a.firebaseapp.com",
-	 	projectId: "nostartnoendhk-11a6a",
-	  	storageBucket: "nostartnoendhk-11a6a.firebasestorage.app",
-	  	messagingSenderId: "1394470229",
-	  	appId: "1:1394470229:web:e20dd66a469aaaf429d3dc",
-	  	measurementId: "G-733PSHDR5L"
+  		apiKey: "AIzaSyBHw_5ApaAa6N18ym4QnzJwmoxWRP3M4Ac",
+  		authDomain: "nostartnoendhk-11a6a.firebaseapp.com",
+  		projectId: "nostartnoendhk-11a6a",
+  		storageBucket: "nostartnoendhk-11a6a.firebasestorage.app",
+  		messagingSenderId: "1394470229",
+  		appId: "1:1394470229:web:e20dd66a469aaaf429d3dc",
+  		measurementId: "G-733PSHDR5L"
 		};
 		
         const app = initializeApp(firebaseConfig);
