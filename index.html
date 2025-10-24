@@ -14,8 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon (Embedded) -->
-    <!-- I've embedded your logo as a Data URL to fix the broken 'public/icon.png' path -->
-    <link rel="icon" href="public/icon.png" type="image/png">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" type="image/png">
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; /* Add padding for bottom nav */ }
@@ -52,7 +51,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <!-- Embedded logo -->
-                    <img src="public/icon.png" alt="logo" class="h-8 w-8">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" alt="logo" class="h-8 w-8">
                     <div>
                         <h1 class="text-lg font-bold">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
@@ -60,6 +59,7 @@
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium">
                     <!-- Link to Google Form -->
+                    <!-- This link is hidden on mobile (hidden) and shown on sm screens and up (sm:block) -->
                     <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="hidden sm:block py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
                         小店/活動登記
                     </a>
@@ -113,18 +113,33 @@
     </div>
 
     <!-- Bottom Tab Bar -->
+    <!-- ▼▼▼ THIS SECTION HAS BEEN MODIFIED ▼▼▼ -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
+            <!-- Explore Button -->
             <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                 <span class="text-xs font-medium">探索</span>
             </button>
+
+            <!-- NEW: Register Button (Mobile Only) -->
+            <!-- This is an <a> link styled as a tab-btn -->
+            <!-- It is visible by default, and hidden on sm: screens and up -->
+            <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="tab-btn sm:hidden flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-xs font-medium">登記</span>
+            </a>
+            
+            <!-- My Trip Button -->
             <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg>
                 <span class="text-xs font-medium">我的行程</span>
             </button>
         </div>
     </nav>
+    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
 	
     <!-- Modal -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
@@ -193,9 +208,11 @@
             plannerPage.classList.add('hidden');
             document.getElementById(pageId).classList.remove('hidden');
 
-            tabButtons.forEach(btn => {
+            // Update active state for all buttons, including the new <a> link
+            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.page === pageId);
             });
+            
             if (pageId === 'planner-page' && auth) {
                 renderPlannerPage(auth.currentUser);
             }
@@ -240,7 +257,7 @@
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
@@ -256,7 +273,11 @@
                         <button id="planner-login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>
                     </div>
                 `;
-                document.getElementById('planner-login-btn').addEventListener('click', handleSignIn);
+                // Check if element exists before adding listener
+                const loginBtn = document.getElementById('planner-login-btn');
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', handleSignIn);
+                }
             } else {
                 plannerPage.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
@@ -267,7 +288,11 @@
                         <!-- User trips will be rendered here -->
                     </div>
                 `;
-                document.getElementById('new-trip-btn').addEventListener('click', createNewTrip);
+                // Check if element exists before adding listener
+                const newTripBtn = document.getElementById('new-trip-btn');
+                if (newTripBtn) {
+                    newTripBtn.addEventListener('click', createNewTrip);
+                }
                 renderUserTrips(); // Render existing trips
             }
         }
@@ -299,7 +324,7 @@
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 // Sort by creation date, newest first
-                userTrips.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                userTrips.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
                 renderUserTrips();
             }, (error) => {
                 console.error("Error fetching user trips: ", error);
@@ -340,17 +365,27 @@
             if (!user || !db) {
                 // Use a custom modal/alert later, for now, console log is fine.
                 console.warn("Please log in to add items to a trip.");
+                // You could also trigger your modal here
+                // openModal({ title: "Login Required", description: "Please log in to add items to your trip." });
                 return;
             }
 
             if (userTrips.length === 0) {
-                await createNewTrip(); // Auto-create first trip
-                // Wait a moment for the new trip to be created and fetched
-                setTimeout(() => {
-                    if(userTrips.length > 0) {
-                         addItemToTrip(userTrips[0].id, item);
-                    }
-                }, 1000);
+                // Auto-create first trip
+                const tripName = "我的香港之旅";
+                try {
+                    const newTripRef = await addDoc(collection(db, "trips"), {
+                        userId: user.uid,
+                        name: tripName,
+                        createdAt: Timestamp.now(),
+                        items: []
+                    });
+                    // Now add the item to this new trip
+                    addItemToTrip(newTripRef.id, item);
+                } catch (e) {
+                     console.error("Error creating new trip: ", e);
+                }
+
             } else {
                 // For simplicity, add to the most recent trip (the first in the sorted list)
                 addItemToTrip(userTrips[0].id, item);
@@ -363,16 +398,25 @@
             try {
                 // Just store the essential info
                 const itemStub = {
-                    id: item.id,
+                    id: item.id || null, // Ensure ID is present
                     name: item.name || item.title,
                     category: item.category || (item.title ? '活動' : '地點'),
                     url: item.url
                 };
-                await updateDoc(tripRef, {
-                    items: arrayUnion(itemStub)
-                });
-                console.log("Item added to trip!");
-                // Optionally: show a success message
+                
+                // Check if item already exists to avoid duplicates
+                const currentTrip = userTrips.find(t => t.id === tripId);
+                const itemExists = currentTrip?.items.some(i => (i.id && i.id === itemStub.id) || (i.name === itemStub.name));
+
+                if (!itemExists) {
+                    await updateDoc(tripRef, {
+                        items: arrayUnion(itemStub)
+                    });
+                    console.log("Item added to trip!");
+                } else {
+                    console.log("Item already in trip.");
+                }
+
             } catch (e) {
                 console.error("Error adding item to trip: ", e);
             }
@@ -381,7 +425,6 @@
 
         // --- DATA FETCHING & RENDERING ---
         
-        // ** FIXED: Added this function back from the working file **
         function fetchData() {
             if (!db) {
                 console.error("Firestore DB not initialized.");
@@ -416,7 +459,6 @@
             }
         }
         
-        // ** FIXED: Added this function back from the working file **
         function stringToColor(str) {
             if (!str) return '#cccccc';
             let hash = 0;
@@ -429,7 +471,6 @@
             return color;
         }
         
-        // ** FIXED: Added this function back from the working file **
         function populateSenses() {
             sensesContainer.innerHTML = SENSES.map((sense, index) => 
                 `<button data-sense="${sense}" class="sense-btn border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors">${SENSES_ZH[index]}</button>`
@@ -442,7 +483,6 @@
             });
         }
 
-        // ** FIXED: Added this function back from the working file **
         function populateDistricts() {
             const currentSelection = districtSelect.value;
             const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
@@ -450,7 +490,6 @@
             districtSelect.value = currentSelection;
         }
 
-        // ** FIXED: Added this function back from the working file **
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
@@ -477,13 +516,22 @@
                     today.setHours(0, 0, 0, 0); 
                     
                     try {
-                        const [year, month, day] = item.end_date.split('-').map(Number);
-                        const eventEndDate = new Date(year, month - 1, day);
+                        // Handle Firestore Timestamp or string date
+                        let eventEndDate;
+                        if (item.end_date.toDate) { // Check if it's a Firestore Timestamp
+                            eventEndDate = item.end_date.toDate();
+                        } else if (typeof item.end_date === 'string') { // Handle YYYY-MM-DD string
+                            const [year, month, day] = item.end_date.split('-').map(Number);
+                            eventEndDate = new Date(year, month - 1, day);
+                        } else {
+                            eventEndDate = new Date(item.end_date); // Fallback
+                        }
+                        
                         if (eventEndDate < today) {
                             dateMatch = false;
                         }
                     } catch(e) {
-                        console.warn("Invalid date format for item: ", item.title);
+                        console.warn("Invalid date format for item: ", item.title, e);
                     }
                 }
                 
@@ -492,8 +540,6 @@
             renderResults(filtered);
         }
 
-        // ** FIXED: Added this function back from the working file **
-        // ** MODIFIED: Added "Add to Trip" button
         function renderResults(results) {
             resultsGrid.innerHTML = '';
             
@@ -545,14 +591,25 @@
             });
         }
         
-        // ** FIXED: Added this function back from the working file **
-        // ** MODIFIED: Added "Add to Trip" button
         function openModal(item) {
             const isEvent = 'title' in item;
             const name = item.name || item.title;
             const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
             const color = stringToColor(name).substring(1);
             const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=raleway`;
+            
+            // Format dates if they exist
+            let eventDateStr = '';
+            if (isEvent) {
+                let startDate = item.start_date || '';
+                if (startDate.toDate) startDate = startDate.toDate().toLocaleDateString('zh-HK'); // Convert timestamp
+                
+                let endDate = item.end_date || '';
+                if (endDate.toDate) endDate = endDate.toDate().toLocaleDateString('zh-HK');
+
+                eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
+            }
+
             modalContent.innerHTML = `
                 <div class="relative">
                     <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10">
@@ -561,7 +618,7 @@
                     <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
                     <h3 class="font-bold text-xl sm:text-2xl">${name}</h3>
                     <p class="text-gray-500 mt-1">${item.address || item.district}</p>
-                    ${isEvent ? `<p class="text-sm text-blue-600 font-semibold mt-2">${item.start_date}${item.end_date && item.end_date !== item.start_date ? ' - ' + item.end_date : ''}</p>` : ''}
+                    ${eventDateStr}
                     <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
                     <div class="mt-6 flex gap-2">
@@ -584,7 +641,6 @@
             });
         }
 
-        // ** FIXED: Added this function back from the working file **
         function closeModal() {
             modalBackdrop.classList.add('modal-enter');
             setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
@@ -605,14 +661,14 @@
         
         modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
 
-        tabButtons.forEach(button => {
+        // MODIFIED: Attach listener to all tab buttons
+        document.querySelectorAll('.tab-btn[data-page]').forEach(button => {
             button.addEventListener('click', () => {
                 showPage(button.dataset.page);
             });
         });
 
         // --- INITIALIZATION ---
-        // ** FIXED: This code now runs only if Firebase initialized successfully **
         if (db && auth) {
             populateSenses();
             fetchData();
@@ -624,4 +680,3 @@
     </script>
 </body>
 </html>
-
