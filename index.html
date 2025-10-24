@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-HK"> <!-- 設為繁體中文 -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,13 +17,39 @@
     <link rel="icon" href="public/icon.png" type="image/png">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; /* Add padding for bottom nav */ }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } /* 為日期滾動條添加高度 */
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+        
         .filter-btn.active { background-color: #343a40; color: #ffffff; }
         .sense-btn.active { background-color: #495057; color: #ffffff; border-color: #495057; }
+        
+        /* ▼▼▼ 新增的日期按鈕樣式 ▼▼▼ */
+        .date-btn {
+            display: inline-block;
+            white-space: nowrap;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: #e5e7eb; /* 淺灰色背景 */
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-right: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .date-btn:hover { background-color: #d1d5db; }
+        .date-btn.active {
+            background-color: #343a40; /* 深色背景 */
+            color: #ffffff; /* 白色文字 */
+        }
+        /* 隱藏滾動條（但在支援的瀏覽器上仍可滾動） */
+        #date-scroller::-webkit-scrollbar { display: none; }
+        #date-scroller { -ms-overflow-style: none; scrollbar-width: none; }
+        /* ▲▲▲ 結束新增樣式 ▲▲▲ */
+
         .result-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         .result-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
         #modal-backdrop { transition: opacity 0.3s ease-in-out; }
@@ -46,27 +72,22 @@
 <body class="text-gray-800">
 
     <!-- Header -->
-    <!-- ▼▼▼ THIS SECTION HAS BEEN MODIFIED ▼▼▼ -->
+    <!-- 這部分包含了手機版/桌面版右上角按鈕的修正 -->
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-gray-200">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
-                    <!-- Embedded logo -->
                     <img src="public/icon.png" alt="logo" class="h-8 w-8">
                     <div>
                         <h1 class="text-lg font-bold">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
                     </div>
                 </div>
-                <!-- This container now wraps its children neatly on mobile -->
                 <div class="flex items-center gap-2 text-sm font-medium flex-shrink-0">
-                    <!-- Link to Google Form -->
-                    <!-- Removed 'hidden sm:block' and added responsive text -->
                     <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
-                        <span class="sm:hidden">登記</span> <!-- Mobile text -->
-                        <span class="hidden sm:inline">小店/活動登記</span> <!-- Desktop text -->
+                        <span class="sm:hidden">登記</span> <!-- 手機版文字 -->
+                        <span class="hidden sm:inline">小店/活動登記</span> <!-- 桌面版文字 -->
                     </a>
-                    <!-- Auth UI populated by JS -->
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium">
                         <!-- Auth UI will be injected here -->
                     </div>
@@ -74,7 +95,6 @@
             </div>
         </div>
     </header>
-    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
 
     <!-- Main Content Area -->
     <div id="page-container">
@@ -93,15 +113,26 @@
                     </div>
                 </div>
             </section>
+            
             <section id="results-container">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-2 text-sm font-medium">
-                        <button data-filter="all" class="filter-btn active py-2 px-4 rounded-md bg-gray-200">全部</button>
-                        <button data-filter="events" class="filter-btn py-2 px-4 rounded-md hover:bg-gray-200">活動</button>
-                        <button data-filter="places" class="filter-btn py-2 px-4 rounded-md hover:bg-gray-200">本地小店</button>
+                <!-- ▼▼▼ 篩選按鈕已修改 ▼▼▼ -->
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 text-sm font-medium border-b border-gray-200">
+                        <!-- 移除了 "全部", "活動" 預設為 active -->
+                        <button data-filter="events" class="filter-btn active py-3 px-5 border-b-2 border-transparent">活動</button>
+                        <button data-filter="places" class="filter-btn py-3 px-5 border-b-2 border-transparent text-gray-500">本地小店</button>
                     </div>
-                    <p id="results-count" class="text-sm text-gray-500"></p>
                 </div>
+
+                <!-- ▼▼▼ 新增的日期滾動條 ▼▼▼ -->
+                <!-- 預設為顯示 (因為 "活動" 是預設), 當點擊 "本地小店" 時將會隱藏 -->
+                <div id="date-scroller" class="mb-4 -mt-2 pb-2 overflow-x-auto whitespace-nowrap">
+                    <!-- Date buttons will be populated by JS -->
+                </div>
+                <!-- ▲▲▲ 結束新增日期滾動條 ▲▲▲ -->
+
+                <p id="results-count" class="text-sm text-gray-500 mb-4"></p>
+                
                 <div id="loader" class="text-center py-10"><p class="text-gray-500">正在加載體驗...</p></div>
                 <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 <div id="no-results" class="hidden text-center py-16">
@@ -118,29 +149,23 @@
     </div>
 
     <!-- Bottom Tab Bar -->
-    <!-- ▼▼▼ THIS SECTION HAS BEEN MODIFIED ▼▼▼ -->
+    <!-- 這部分移除了手機版的 "登記" 按鈕 -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
-            <!-- Explore Button -->
             <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                 <span class="text-xs font-medium">探索</span>
             </button>
-            
-            <!-- REMOVED: The mobile-only "Register Button" has been removed from here. -->
-
-            <!-- My Trip Button -->
             <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg>
                 <span class="text-xs font-medium">我的行程</span>
             </button>
         </div>
     </nav>
-    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
     
     <!-- Modal -->
+    <!-- 這部分包含了彈窗置中的修正 -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
-        <!-- This contains the fix for modal centering -->
         <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
     
@@ -154,7 +179,7 @@
             apiKey: "AIzaSyBHw_5ApaAa6N18ym4QnzJwmoxWRP3M4Ac",
             authDomain: "nostartnoendhk-11a6a.firebaseapp.com",
             projectId: "nostartnoendhk-11a6a",
-            storageBucket: "nostartnoendhk-11a6a.appspot.com", 
+            storageBucket: "nostartnoendhk-11a6a.appspot.com",
             messagingSenderId: "1394470229",
             appId: "1:1394470229:web:e20dd66a469aaaf429d3dc",
             measurementId: "G-733PSHDR5L"
@@ -180,7 +205,8 @@
         let allPlaces = [];
         let allEvents = [];
         let userTrips = [];
-        let currentFilter = 'all';
+        let currentFilter = 'events'; // ▼▼▼ 預設篩選器已更改 ▼▼▼
+        let selectedDate = 'all'; // ▼▼▼ 新增日期狀態 ▼▼▼
 
         // DOM Elements
         const authContainer = document.getElementById('auth-container');
@@ -194,9 +220,10 @@
         const resultFilterButtons = document.querySelectorAll('.filter-btn');
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalContent = document.getElementById('modal-content');
-        //const tabButtons = document.querySelectorAll('.tab-btn'); // We select them differently now
+        const tabButtons = document.querySelectorAll('.tab-btn[data-page]'); // 修正選擇器
         const explorePage = document.getElementById('explore-page');
         const plannerPage = document.getElementById('planner-page');
+        const dateScroller = document.getElementById('date-scroller'); // ▼▼▼ 新增 DOM 元素 ▼▼▼
 
         // --- PAGE NAVIGATION ---
         function showPage(pageId) {
@@ -204,17 +231,16 @@
             plannerPage.classList.add('hidden');
             document.getElementById(pageId).classList.remove('hidden');
 
-            // Update active state for all buttons, including the new <a> link
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+            tabButtons.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.page === pageId);
             });
-            
             if (pageId === 'planner-page' && auth) {
                 renderPlannerPage(auth.currentUser);
             }
         }
 
         // --- AUTHENTICATION ---
+        // (此處的 Auth 相關函數 'handleSignIn', 'handleSignOut', 'onAuthStateChanged', 'renderAuthUI' 保持不變)
         const provider = new GoogleAuthProvider();
 
         function handleSignIn() {
@@ -230,7 +256,7 @@
         if (auth) {
              onAuthStateChanged(auth, user => {
                 renderAuthUI(user);
-                renderPlannerPage(user); // Re-render planner page on auth change
+                renderPlannerPage(user);
                 if (user && db) { 
                     fetchUserTrips(user.uid);
                 } else {
@@ -251,12 +277,13 @@
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
 
         // --- TRIP PLANNER LOGIC ---
+        // (此處的 Planner 相關函數 'renderPlannerPage', 'createNewTrip', 'fetchUserTrips', 'renderUserTrips', 'handleAddToTrip', 'addItemToTrip' 保持不變)
         function renderPlannerPage(user) {
             if (!user) {
                 plannerPage.innerHTML = `
@@ -291,7 +318,6 @@
         async function createNewTrip() {
             const user = auth?.currentUser;
             if (!user || !db) return;
-
             const tripName = prompt("請輸入新行程的名稱：", "我的香港之旅");
             if (tripName) {
                 try {
@@ -301,34 +327,27 @@
                         createdAt: Timestamp.now(),
                         items: []
                     });
-                } catch (e) {
-                    console.error("Error creating new trip: ", e);
-                }
+                } catch (e) { console.error("Error creating new trip: ", e); }
             }
         }
 
         function fetchUserTrips(userId) {
             if (!db) return;
             const q = query(collection(db, "trips"), where("userId", "==", userId));
-            
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 userTrips.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
                 renderUserTrips();
-            }, (error) => {
-                console.error("Error fetching user trips: ", error);
-            });
+            }, (error) => { console.error("Error fetching user trips: ", error); });
         }
 
         function renderUserTrips() {
             const container = document.getElementById('trips-container');
             if (!container) return; 
-
             if (userTrips.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-center">你尚未建立任何行程。</p>`;
                 return;
             }
-
             container.innerHTML = userTrips.map(trip => `
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                     <h3 class="text-xl font-bold mb-3">${trip.name}</h3>
@@ -355,7 +374,6 @@
                 console.warn("Please log in to add items to a trip.");
                 return;
             }
-
             if (userTrips.length === 0) {
                 const tripName = "我的香港之旅";
                 try {
@@ -366,9 +384,7 @@
                         items: []
                     });
                     addItemToTrip(newTripRef.id, item);
-                } catch (e) {
-                     console.error("Error creating new trip: ", e);
-                }
+                } catch (e) { console.error("Error creating new trip: ", e); }
             } else {
                 addItemToTrip(userTrips[0].id, item);
             }
@@ -384,26 +400,20 @@
                     category: item.category || (item.title ? '活動' : '地點'),
                     url: item.url
                 };
-                
                 const currentTrip = userTrips.find(t => t.id === tripId);
                 const itemExists = currentTrip?.items.some(i => (i.id && i.id === itemStub.id) || (i.name === itemStub.name));
-
                 if (!itemExists) {
-                    await updateDoc(tripRef, {
-                        items: arrayUnion(itemStub)
-                    });
+                    await updateDoc(tripRef, { items: arrayUnion(itemStub) });
                     console.log("Item added to trip!");
                 } else {
                     console.log("Item already in trip.");
                 }
-
-            } catch (e) {
-                console.error("Error adding item to trip: ", e);
-            }
+            } catch (e) { console.error("Error adding item to trip: ", e); }
         }
 
         // --- DATA FETCHING & RENDERING ---
         function fetchData() {
+            // (此處的 'fetchData' 函數保持不變)
             if (!db) {
                 console.error("Firestore DB not initialized.");
                 loader.style.display = 'none';
@@ -411,7 +421,6 @@
                 return;
             }
             loader.style.display = 'block';
-
             const handleSnapshot = (snapshot, type) => {
                 const dataArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (type === 'places') allPlaces = dataArray;
@@ -419,7 +428,6 @@
                 populateDistricts();
                 performSearch();
             };
-
             const handleError = (type, error) => {
                 console.error(`Error fetching ${type}:`, error);
                 loader.style.display = 'none';
@@ -427,7 +435,6 @@
                     resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料，請稍後再試。</p>`;
                 }
             };
-
             try {
                 onSnapshot(collection(db, "places"), (snap) => handleSnapshot(snap, 'places'), (err) => handleError('places', err));
                 onSnapshot(collection(db, "events"), (snap) => handleSnapshot(snap, 'events'), (err) => handleError('events', err));
@@ -438,6 +445,7 @@
         }
         
         function stringToColor(str) {
+            // (此處的 'stringToColor' 函數保持不變)
             if (!str) return '#cccccc';
             let hash = 0;
             for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -450,6 +458,7 @@
         }
         
         function populateSenses() {
+            // (此處的 'populateSenses' 函數保持不變)
             sensesContainer.innerHTML = SENSES.map((sense, index) => 
                 `<button data-sense="${sense}" class="sense-btn border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors">${SENSES_ZH[index]}</button>`
             ).join('');
@@ -462,20 +471,43 @@
         }
 
         function populateDistricts() {
+            // (此處的 'populateDistricts' 函數保持不變)
             const currentSelection = districtSelect.value;
             const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
             districtSelect.innerHTML = `<option value="all">所有地區</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
             districtSelect.value = currentSelection;
         }
 
+        // ▼▼▼ 新增函數：產生日期滾動條 ▼▼▼
+        function populateDateScroller() {
+            let buttonsHtml = `<button class="date-btn active" data-date="all">所有日子</button>`;
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            
+            for (let i = 0; i < 6; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                
+                const dateString = date.toISOString().split('T')[0]; // "2025-10-24"
+                const day = date.getDate(); // 24
+                const weekday = weekdays[date.getDay()]; // "五"
+                
+                buttonsHtml += `<button class="date-btn" data-date="${dateString}">${day} (${weekday})</button>`;
+            }
+            dateScroller.innerHTML = buttonsHtml;
+        }
+        // ▲▲▲ 結束新增函數 ▲▲▲
+
+
+        // ▼▼▼ `performSearch` 函數已更新 ▼▼▼
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
             const searchQuery = searchInput.value.toLowerCase();
 
             let results = [];
-            if (currentFilter === 'all' || currentFilter === 'places') results.push(...allPlaces);
-            if (currentFilter === 'all' || currentFilter === 'events') results.push(...allEvents);
+            // 根據 currentFilter 決定要載入的數據
+            if (currentFilter === 'places') results.push(...allPlaces);
+            if (currentFilter === 'events') results.push(...allEvents);
 
             const filtered = results.filter(item => {
                 const name = item.name || item.title;
@@ -486,50 +518,90 @@
                 const sensesMatch = selectedSenses.length === 0 || selectedSenses.every(s => senses.includes(s));
                 const searchMatch = searchQuery === '' || name.toLowerCase().includes(searchQuery);
 
-                let dateMatch = true; 
+                // 1. 現有的日期過濾 (過濾掉已結束的活動)
+                let pastEventMatch = true; // 預設為 true (即 "非已結束活動")
                 const isEvent = 'title' in item;
                 if (isEvent && item.end_date) {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0); 
-                    
                     try {
                         let eventEndDate;
                         if (item.end_date.toDate) { 
                             eventEndDate = item.end_date.toDate();
-                        } else if (typeof item.end_date === 'string') { 
+                        } else {
                             const [year, month, day] = item.end_date.split('-').map(Number);
                             eventEndDate = new Date(year, month - 1, day);
-                        } else {
-                            eventEndDate = new Date(item.end_date); 
                         }
-                        
                         if (eventEndDate < today) {
-                            dateMatch = false;
+                            pastEventMatch = false; // 已結束
                         }
-                    } catch(e) {
-                        console.warn("Invalid date format for item: ", item.title, e);
+                    } catch(e) { console.warn("Invalid end_date format: ", item.title, e); }
+                }
+
+                // 2. 新增的日期篩選 (根據 'selectedDate')
+                let selectedDateMatch = true;
+                if (isEvent && selectedDate !== 'all') {
+                    // 只在 "活動" 和 "非所有日子" 時才檢查
+                    try {
+                        let eventStartDate;
+                        if (item.start_date.toDate) {
+                            eventStartDate = item.start_date.toDate();
+                        } else {
+                            const [year, month, day] = item.start_date.split('-').map(Number);
+                            eventStartDate = new Date(year, month - 1, day);
+                        }
+                        eventStartDate.setHours(0, 0, 0, 0);
+
+                        const filterDate = new Date(selectedDate); // e.g., "2025-10-24"
+                        filterDate.setHours(0, 0, 0, 0);
+
+                        // 如果活動開始日期 < 篩選日期，則不匹配
+                        if (eventStartDate < filterDate) {
+                            selectedDateMatch = false;
+                        }
+                    } catch (e) {
+                        console.warn('Invalid start_date format for item:', item.title, e);
+                        selectedDateMatch = false; // 無法解析日期，不顯示
                     }
                 }
                 
-                return districtMatch && sensesMatch && searchMatch && dateMatch;
+                return districtMatch && sensesMatch && searchMatch && pastEventMatch && selectedDateMatch;
             });
+
+            // ▼▼▼ 新增排序邏輯 ▼▼▼
+            if (currentFilter === 'events') {
+                // 如果是活動，按 start_date 升序排 (由近到遠)
+                filtered.sort((a, b) => {
+                    const dateA = a.start_date?.toDate ? a.start_date.toMillis() : (new Date(a.start_date).getTime() || 0);
+                    const dateB = b.start_date?.toDate ? b.start_date.toMillis() : (new Date(b.start_date).getTime() || 0);
+                    return (isNaN(dateA) ? Infinity : dateA) - (isNaN(dateB) ? Infinity : dateB);
+                });
+            } else {
+                // 如果是小店，按 created_at 降序排 (由新到舊)
+                filtered.sort((a, b) => {
+                    const dateA = a.created_at?.toMillis ? a.created_at.toMillis() : (new Date(a.created_at).getTime() || 0);
+                    const dateB = b.created_at?.toMillis ? b.created_at.toMillis() : (new Date(b.created_at).getTime() || 0);
+                    return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
+                });
+            }
+
             renderResults(filtered);
         }
+        // ▲▲▲ `performSearch` 函數結束 ▲▲▲
 
+
+        // ▼▼▼ `renderResults` 函數已更新 ▼▼▼
         function renderResults(results) {
             resultsGrid.innerHTML = '';
             
-            results.sort((a, b) => {
-                const dateA = a.created_at?.toMillis ? a.created_at.toMillis() : (new Date(a.created_at).getTime() || 0);
-                const dateB = b.created_at?.toMillis ? b.created_at.toMillis() : (new Date(b.created_at).getTime() || 0);
-                return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
-            });
+            // 移除了這裡的排序邏輯，因為它已移至 `performSearch` 中
 
             resultsCount.textContent = `顯示 ${results.length} 個結果`;
             loader.style.display = 'none';
             noResults.style.display = results.length === 0 ? 'block' : 'none';
 
             results.forEach((item, index) => {
+                // (此處的 'renderResults' 內部邏輯保持不變)
                 const isEvent = 'title' in item;
                 const name = item.name || item.title;
                 const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -564,25 +636,23 @@
                 resultsGrid.appendChild(card);
             });
         }
+        // ▲▲▲ `renderResults` 函數結束 ▲▲▲
         
         function openModal(item) {
+            // (此處的 'openModal' 函數保持不變)
             const isEvent = 'title' in item;
             const name = item.name || item.title;
             const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
             const color = stringToColor(name).substring(1);
             const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=raleway`;
-            
             let eventDateStr = '';
             if (isEvent) {
                 let startDate = item.start_date || '';
                 if (startDate.toDate) startDate = startDate.toDate().toLocaleDateString('zh-HK'); 
-                
                 let endDate = item.end_date || '';
                 if (endDate.toDate) endDate = endDate.toDate().toLocaleDateString('zh-HK');
-
                 eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
             }
-
             modalContent.innerHTML = `
                 <div class="relative">
                     <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10">
@@ -614,6 +684,7 @@
         }
 
         function closeModal() {
+            // (此處的 'closeModal' 函數保持不變)
             modalBackdrop.classList.add('modal-enter');
             setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
         }
@@ -622,29 +693,57 @@
         districtSelect.addEventListener('change', performSearch);
         searchInput.addEventListener('input', performSearch);
         
+        // ▼▼▼ `resultFilterButtons` 監聽器已更新 ▼▼▼
         resultFilterButtons.forEach(button => {
             button.addEventListener('click', () => {
-                resultFilterButtons.forEach(btn => btn.classList.remove('active', 'bg-gray-200'));
+                resultFilterButtons.forEach(btn => btn.classList.remove('active', 'text-gray-500'));
                 button.classList.add('active');
+                if (!button.classList.contains('active')) {
+                    button.classList.add('text-gray-500');
+                }
+                
                 currentFilter = button.dataset.filter;
+                
+                // 根據篩選器顯示/隱藏日期滾動條
+                if (currentFilter === 'events') {
+                    dateScroller.classList.remove('hidden');
+                } else {
+                    dateScroller.classList.add('hidden');
+                }
+                
+                // 重置日期篩選
+                selectedDate = 'all';
+                dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                dateScroller.querySelector('.date-btn[data-date="all"]').classList.add('active');
+
                 performSearch();
             });
         });
         
         modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
 
-        // MODIFIED: Attach listener to all tab buttons (including the new <a> link)
-        document.querySelectorAll('.tab-btn[data-page]').forEach(button => {
+        tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 showPage(button.dataset.page);
             });
         });
 
+        // ▼▼▼ 新增日期滾動條的監聽器 ▼▼▼
+        dateScroller.addEventListener('click', e => {
+            if (e.target.classList.contains('date-btn')) {
+                dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedDate = e.target.dataset.date;
+                performSearch();
+            }
+        });
+
         // --- INITIALIZATION ---
         if (db && auth) {
             populateSenses();
+            populateDateScroller(); // ▼▼▼ 新增呼叫 ▼▼▼
             fetchData();
-            showPage('explore-page'); // Start on explore page
+            showPage('explore-page'); 
         } else {
              console.log("Firebase not ready, skipping initial data load and UI setup.");
         }
