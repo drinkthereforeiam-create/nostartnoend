@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon (Embedded) -->
-    <!-- I've embedded your logo as a Data URL to fix the broken 'public/icon.png' path -->
     <link rel="icon" href="public/icon.png" type="image/png">
 
     <style>
@@ -53,19 +52,16 @@
                 <div class="flex items-center gap-3">
                     <!-- Embedded logo -->
                     <img src="public/icon.png" alt="logo" class="h-8 w-8">
-                    <div>
                         <h1 class="text-lg font-bold">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium">
                     <!-- Link to Google Form -->
-                    <!-- ▼▼▼ THIS LINE HAS BEEN MODIFIED ▼▼▼ -->
-                    <!-- I removed 'hidden' and 'sm:block' so it's always visible -->
-                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
+                    <!-- This link is hidden on mobile (hidden) and shown on sm screens and up (sm:block) -->
+                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="hidden sm:block py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
                         小店/活動登記
                     </a>
-                    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
                     <!-- Auth UI populated by JS -->
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium">
                     </div>
@@ -116,40 +112,55 @@
     </div>
 
     <!-- Bottom Tab Bar -->
+    <!-- This includes the fix for the mobile navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
+            <!-- Explore Button -->
             <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                 <span class="text-xs font-medium">探索</span>
             </button>
+
+            <!-- Register Button (Mobile Only) -->
+            <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="tab-btn sm:hidden flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-xs font-medium">登記</span>
+            </a>
+            
+            <!-- My Trip Button -->
             <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg>
                 <span class="text-xs font-medium">我的行程</span>
             </button>
         </div>
     </nav>
-	
+    
     <!-- Modal -->
+    <!-- ▼▼▼ THIS LINE HAS BEEN MODIFIED ▼▼▼ -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
-        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1-2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
+        <!-- The typo '-translate-y-1-2' has been corrected to '-translate-y-1/2' -->
+        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
+    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
     
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
-	
+    
         const firebaseConfig = {
             apiKey: "AIzaSyBHw_5ApaAa6N18ym4QnzJwmoxWRP3M4Ac",
             authDomain: "nostartnoendhk-11a6a.firebaseapp.com",
             projectId: "nostartnoendhk-11a6a",
-            storageBucket: "nostartnoendhk-11a6a.appspot.com", // Corrected storage bucket
+            storageBucket: "nostartnoendhk-11a6a.appspot.com", 
             messagingSenderId: "1394470229",
             appId: "1:1394470229:web:e20dd66a469aaaf429d3dc",
             measurementId: "G-733PSHDR5L"
-		};
-		
+        };
+        
         // Initialize Firebase
         let app;
         let auth;
@@ -184,7 +195,7 @@
         const resultFilterButtons = document.querySelectorAll('.filter-btn');
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalContent = document.getElementById('modal-content');
-        const tabButtons = document.querySelectorAll('.tab-btn');
+        //const tabButtons = document.querySelectorAll('.tab-btn'); // We select them differently now
         const explorePage = document.getElementById('explore-page');
         const plannerPage = document.getElementById('planner-page');
 
@@ -194,9 +205,11 @@
             plannerPage.classList.add('hidden');
             document.getElementById(pageId).classList.remove('hidden');
 
-            tabButtons.forEach(btn => {
+            // Update active state for all buttons, including the new <a> link
+            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.page === pageId);
             });
+            
             if (pageId === 'planner-page' && auth) {
                 renderPlannerPage(auth.currentUser);
             }
@@ -239,13 +252,12 @@
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
 
         // --- TRIP PLANNER LOGIC ---
-
         function renderPlannerPage(user) {
             if (!user) {
                 plannerPage.innerHTML = `
@@ -255,7 +267,10 @@
                         <button id="planner-login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>
                     </div>
                 `;
-                document.getElementById('planner-login-btn').addEventListener('click', handleSignIn);
+                const loginBtn = document.getElementById('planner-login-btn');
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', handleSignIn);
+                }
             } else {
                 plannerPage.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
@@ -266,7 +281,10 @@
                         <!-- User trips will be rendered here -->
                     </div>
                 `;
-                document.getElementById('new-trip-btn').addEventListener('click', createNewTrip);
+                const newTripBtn = document.getElementById('new-trip-btn');
+                if (newTripBtn) {
+                    newTripBtn.addEventListener('click', createNewTrip);
+                }
                 renderUserTrips(); // Render existing trips
             }
         }
@@ -296,7 +314,7 @@
             
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                userTrips.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                userTrips.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
                 renderUserTrips();
             }, (error) => {
                 console.error("Error fetching user trips: ", error);
@@ -340,12 +358,18 @@
             }
 
             if (userTrips.length === 0) {
-                await createNewTrip(); 
-                setTimeout(() => {
-                    if(userTrips.length > 0) {
-                         addItemToTrip(userTrips[0].id, item);
-                    }
-                }, 1000);
+                const tripName = "我的香港之旅";
+                try {
+                    const newTripRef = await addDoc(collection(db, "trips"), {
+                        userId: user.uid,
+                        name: tripName,
+                        createdAt: Timestamp.now(),
+                        items: []
+                    });
+                    addItemToTrip(newTripRef.id, item);
+                } catch (e) {
+                     console.error("Error creating new trip: ", e);
+                }
             } else {
                 addItemToTrip(userTrips[0].id, item);
             }
@@ -356,23 +380,30 @@
             const tripRef = doc(db, "trips", tripId);
             try {
                 const itemStub = {
-                    id: item.id,
+                    id: item.id || null, 
                     name: item.name || item.title,
                     category: item.category || (item.title ? '活動' : '地點'),
                     url: item.url
                 };
-                await updateDoc(tripRef, {
-                    items: arrayUnion(itemStub)
-                });
-                console.log("Item added to trip!");
+                
+                const currentTrip = userTrips.find(t => t.id === tripId);
+                const itemExists = currentTrip?.items.some(i => (i.id && i.id === itemStub.id) || (i.name === itemStub.name));
+
+                if (!itemExists) {
+                    await updateDoc(tripRef, {
+                        items: arrayUnion(itemStub)
+                    });
+                    console.log("Item added to trip!");
+                } else {
+                    console.log("Item already in trip.");
+                }
+
             } catch (e) {
                 console.error("Error adding item to trip: ", e);
             }
         }
 
-
         // --- DATA FETCHING & RENDERING ---
-        
         function fetchData() {
             if (!db) {
                 console.error("Firestore DB not initialized.");
@@ -463,13 +494,21 @@
                     today.setHours(0, 0, 0, 0); 
                     
                     try {
-                        const [year, month, day] = item.end_date.split('-').map(Number);
-                        const eventEndDate = new Date(year, month - 1, day);
+                        let eventEndDate;
+                        if (item.end_date.toDate) { 
+                            eventEndDate = item.end_date.toDate();
+                        } else if (typeof item.end_date === 'string') { 
+                            const [year, month, day] = item.end_date.split('-').map(Number);
+                            eventEndDate = new Date(year, month - 1, day);
+                        } else {
+                            eventEndDate = new Date(item.end_date); 
+                        }
+                        
                         if (eventEndDate < today) {
                             dateMatch = false;
                         }
                     } catch(e) {
-                        console.warn("Invalid date format for item: ", item.title);
+                        console.warn("Invalid date format for item: ", item.title, e);
                     }
                 }
                 
@@ -533,6 +572,18 @@
             const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
             const color = stringToColor(name).substring(1);
             const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=raleway`;
+            
+            let eventDateStr = '';
+            if (isEvent) {
+                let startDate = item.start_date || '';
+                if (startDate.toDate) startDate = startDate.toDate().toLocaleDateString('zh-HK'); 
+                
+                let endDate = item.end_date || '';
+                if (endDate.toDate) endDate = endDate.toDate().toLocaleDateString('zh-HK');
+
+                eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
+            }
+
             modalContent.innerHTML = `
                 <div class="relative">
                     <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10">
@@ -541,7 +592,7 @@
                     <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
                     <h3 class="font-bold text-xl sm:text-2xl">${name}</h3>
                     <p class="text-gray-500 mt-1">${item.address || item.district}</p>
-                    ${isEvent ? `<p class="text-sm text-blue-600 font-semibold mt-2">${item.start_date}${item.end_date && item.end_date !== item.start_date ? ' - ' + item.end_date : ''}</p>` : ''}
+                    ${eventDateStr}
                     <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
                     <div class="mt-6 flex gap-2">
@@ -583,7 +634,8 @@
         
         modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
 
-        tabButtons.forEach(button => {
+        // MODIFIED: Attach listener to all tab buttons (including the new <a> link)
+        document.querySelectorAll('.tab-btn[data-page]').forEach(button => {
             button.addEventListener('click', () => {
                 showPage(button.dataset.page);
             });
@@ -601,4 +653,3 @@
     </script>
 </body>
 </html>
-}
