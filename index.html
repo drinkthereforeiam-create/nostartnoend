@@ -46,29 +46,35 @@
 <body class="text-gray-800">
 
     <!-- Header -->
+    <!-- ▼▼▼ THIS SECTION HAS BEEN MODIFIED ▼▼▼ -->
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-gray-200">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <!-- Embedded logo -->
                     <img src="public/icon.png" alt="logo" class="h-8 w-8">
+                    <div>
                         <h1 class="text-lg font-bold">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-sm font-medium">
+                <!-- This container now wraps its children neatly on mobile -->
+                <div class="flex items-center gap-2 text-sm font-medium flex-shrink-0">
                     <!-- Link to Google Form -->
-                    <!-- This link is hidden on mobile (hidden) and shown on sm screens and up (sm:block) -->
-                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="hidden sm:block py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
-                        小店/活動登記
+                    <!-- Removed 'hidden sm:block' and added responsive text -->
+                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
+                        <span class="sm:hidden">登記</span> <!-- Mobile text -->
+                        <span class="hidden sm:inline">小店/活動登記</span> <!-- Desktop text -->
                     </a>
                     <!-- Auth UI populated by JS -->
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium">
+                        <!-- Auth UI will be injected here -->
                     </div>
                 </div>
             </div>
         </div>
     </header>
+    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
 
     <!-- Main Content Area -->
     <div id="page-container">
@@ -112,7 +118,7 @@
     </div>
 
     <!-- Bottom Tab Bar -->
-    <!-- This includes the fix for the mobile navigation -->
+    <!-- ▼▼▼ THIS SECTION HAS BEEN MODIFIED ▼▼▼ -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
             <!-- Explore Button -->
@@ -120,15 +126,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                 <span class="text-xs font-medium">探索</span>
             </button>
-
-            <!-- Register Button (Mobile Only) -->
-            <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="tab-btn sm:hidden flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-xs font-medium">登記</span>
-            </a>
             
+            <!-- REMOVED: The mobile-only "Register Button" has been removed from here. -->
+
             <!-- My Trip Button -->
             <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg>
@@ -136,14 +136,13 @@
             </button>
         </div>
     </nav>
+    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
     
     <!-- Modal -->
-    <!-- ▼▼▼ THIS LINE HAS BEEN MODIFIED ▼▼▼ -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
-        <!-- The typo '-translate-y-1-2' has been corrected to '-translate-y-1/2' -->
+        <!-- This contains the fix for modal centering -->
         <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
-    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
     
     <!-- Firebase SDKs -->
     <script type="module">
@@ -252,7 +251,7 @@
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
@@ -653,3 +652,4 @@
     </script>
 </body>
 </html>
+
