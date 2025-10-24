@@ -17,76 +17,207 @@
     <link rel="icon" href="public/icon.png" type="image/png">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; } /* 為日期滾動條添加高度 */
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+        /* ▼▼▼ 全局樣式與動畫 ▼▼▼ */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f7f8fa; /* 稍微調整背景色，使其更柔和 */
+            padding-bottom: 80px; 
+            -webkit-font-smoothing: antialiased; /* 字體渲染優化 */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 更精緻的滾動條 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+        /* 全局過渡效果 */
+        button, a, select, input, .result-card, .filter-btn, .sense-btn, .date-btn {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        /* ▲▲▲ 結束全局樣式 ▲▲▲ */
+
+        /* ▼▼▼ Header 和 Nav Bar 樣式 ▼▼▼ */
+        .header-nav-style {
+            background-color: rgba(255, 255, 255, 0.7); /* 半透明玻璃效果 */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .bottom-nav-style {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        /* ▲▲▲ 結束 Header/Nav 樣式 ▲▲▲ */
+
+        /* ▼▼▼ 篩選器和按鈕樣式 ▼▼▼ */
+        .filter-btn {
+            position: relative;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .filter-btn.active {
+            color: #111827;
+        }
+        .filter-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; /* 貼合父容器的 border */
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: #111827;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .filter-btn.active::after {
+            width: 50%;
+        }
+
+        .sense-btn {
+            border: 1px solid #e5e7eb;
+        }
+        .sense-btn:hover {
+            transform: translateY(-2px);
+            border-color: #d1d5db;
+        }
+        .sense-btn.active {
+            background-color: #374151;
+            color: #ffffff;
+            border-color: #374151;
+        }
         
-        .filter-btn.active { background-color: #343a40; color: #ffffff; }
-        .sense-btn.active { background-color: #495057; color: #ffffff; border-color: #495057; }
-        
-        /* ▼▼▼ 新增的日期按鈕樣式 ▼▼▼ */
+        /* 日期滾動條 */
+        #date-scroller { -ms-overflow-style: none; scrollbar-width: none; }
+        #date-scroller::-webkit-scrollbar { display: none; }
+
         .date-btn {
             display: inline-block;
             white-space: nowrap;
             padding: 8px 16px;
             border-radius: 20px;
-            background-color: #e5e7eb; /* 淺灰色背景 */
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
             color: #374151;
             font-weight: 500;
             font-size: 0.875rem;
             margin-right: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
-        .date-btn:hover { background-color: #d1d5db; }
+        .date-btn:hover { 
+            background-color: #f3f4f6;
+            transform: translateY(-2px);
+        }
         .date-btn.active {
-            background-color: #343a40; /* 深色背景 */
-            color: #ffffff; /* 白色文字 */
+            background-color: #212529;
+            color: #ffffff;
+            border-color: #212529;
+            box-shadow: 0 4px 15px rgba(33, 37, 41, 0.1);
         }
-        /* 隱藏滾動條（但在支援的瀏覽器上仍可滾動） */
-        #date-scroller::-webkit-scrollbar { display: none; }
-        #date-scroller { -ms-overflow-style: none; scrollbar-width: none; }
-        /* ▲▲▲ 結束新增樣式 ▲▲▲ */
+        /* ▲▲▲ 結束篩選器樣式 ▲▲▲ */
 
-        .result-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
-        .result-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        #modal-backdrop { transition: opacity 0.3s ease-in-out; }
-        #modal-content { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        /* ▼▼▼ 結果卡片樣式 ▼▼▼ */
+        .result-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+        }
+        .result-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+        }
+        /* ▲▲▲ 結束卡片樣式 ▲▲▲ */
+
+        /* ▼▼▼ Modal 彈出視窗樣式 ▼▼▼ */
+        #modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        #modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
         .modal-enter { opacity: 0; }
         .modal-enter-active { opacity: 1; }
-        .modal-enter .modal-content-transform { transform: scale(0.95) translateY(20px); }
+        .modal-enter .modal-content-transform { transform: scale(0.95) translateY(10px); }
         .modal-enter-active .modal-content-transform { transform: scale(1) translateY(0); }
-        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* ▲▲▲ 結束 Modal 樣式 ▲▲▲ */
+
+        /* ▼▼▼ 底部 Tab Bar 樣式 ▼▼▼ */
+        .tab-btn {
+            color: #9ca3af; /* 未選中時更淺色 */
         }
-        .tab-btn.active { color: #111827; }
-        .tab-btn.active svg { color: #111827; }
-        .add-to-trip-btn { transition: all 0.2s ease; }
-        .add-to-trip-btn:hover { transform: scale(1.1); background-color: #e5e7eb; }
+        .tab-btn.active {
+            color: #111827;
+        }
+        .tab-btn:hover {
+            color: #374151;
+        }
+        .tab-btn svg {
+            transition: transform 0.2s ease;
+        }
+        .tab-btn:hover svg {
+            transform: scale(1.1);
+        }
+        /* ▲▲▲ 結束 Tab Bar 樣式 ▲▲▲ */
+
+        /* ▼▼▼ 新增的 fancy 按鈕樣式 ▼▼▼ */
+        .fancy-btn {
+            background-color: #1f2937;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(31, 41, 55, 0.1);
+        }
+        .fancy-btn:hover {
+            background-color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 41, 55, 0.15);
+        }
+        .add-to-trip-btn {
+            transition: all 0.2s ease;
+        }
+        .add-to-trip-btn:hover {
+            transform: scale(1.1);
+            background-color: #e5e7eb;
+        }
+        .add-to-trip-btn.active-animation svg {
+            animation: pop 0.5s ease;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3) rotate(15deg); }
+            100% { transform: scale(1); }
+        }
+        /* ▲▲▲ 結束 fancy 按鈕樣式 ▲▲▲ */
     </style>
 </head>
 <body class="text-gray-800">
 
     <!-- Header -->
-    <!-- 這部分包含了手機版/桌面版右上角按鈕的修正 -->
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-gray-200">
+    <header class="header-nav-style sticky top-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <img src="public/icon.png" alt="logo" class="h-8 w-8">
                     <div>
-                        <h1 class="text-lg font-bold">nose.h.k</h1>
+                        <h1 class="text-lg font-bold tracking-tight">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium flex-shrink-0">
-                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
-                        <span class="sm:hidden">登記</span> <!-- 手機版文字 -->
-                        <span class="hidden sm:inline">小店/活動登記</span> <!-- 桌面版文字 -->
+                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-lg hover:bg-gray-100/80">
+                        <span class="sm:hidden">登記</span>
+                        <span class="hidden sm:inline">小店/活動登記</span>
                     </a>
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium">
                         <!-- Auth UI will be injected here -->
@@ -100,36 +231,29 @@
     <div id="page-container">
         <!-- Explore Page -->
         <main id="explore-page" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <section id="filters" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-8">
-                <h2 class="text-xl font-bold mb-1">Discover by senses —</h2>
-                <p class="text-gray-500 mb-4">Pick one or more senses and explore Events & Local Shops curated for you.</p>
-                <div class="flex flex-col sm:flex-row gap-2">
+            <section id="filters" class="bg-white p-6 rounded-2xl shadow-lg shadow-gray-500/5 mb-8 border border-gray-200/50">
+                <h2 class="text-xl font-bold mb-1 tracking-tight">Discover by senses —</h2>
+                <p class="text-gray-500 mb-5">Pick one or more senses and explore Events & Local Shops curated for you.</p>
+                <div class="flex flex-col sm:flex-row gap-3">
                     <div id="senses-container" class="flex flex-wrap gap-2 items-center"></div>
-                    <div class="flex-grow flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
-                        <select id="district-select" class="w-full sm:w-40 p-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none">
-                            <option value="all">所有地區</option>
-                        </select>
-                        <input type="text" id="search-input" placeholder="搜尋活動或小店..." class="flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none">
+                    <div class="flex-grow flex flex-col sm:flex-row gap-3 mt-2 sm:mt-0">
+                        <select id="district-select" class="w-full sm:w-40 p-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none"></select>
+                        <input type="text" id="search-input" placeholder="搜尋活動或小店..." class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none">
                     </div>
                 </div>
             </section>
             
             <section id="results-container">
-                <!-- ▼▼▼ 篩選按鈕已修改 ▼▼▼ -->
                 <div class="mb-4">
                     <div class="flex items-center gap-2 text-sm font-medium border-b border-gray-200">
-                        <!-- 移除了 "全部", "活動" 預設為 active -->
-                        <button data-filter="events" class="filter-btn active py-3 px-5 border-b-2 border-transparent">活動</button>
-                        <button data-filter="places" class="filter-btn py-3 px-5 border-b-2 border-transparent text-gray-500">本地小店</button>
+                        <button data-filter="events" class="filter-btn active py-3 px-5">活動</button>
+                        <button data-filter="places" class="filter-btn py-3 px-5">本地小店</button>
                     </div>
                 </div>
 
-                <!-- ▼▼▼ 新增的日期滾動條 ▼▼▼ -->
-                <!-- 預設為顯示 (因為 "活動" 是預設), 當點擊 "本地小店" 時將會隱藏 -->
-                <div id="date-scroller" class="mb-4 -mt-2 pb-2 overflow-x-auto whitespace-nowrap">
+                <div id="date-scroller" class="mb-6 -mt-2 pb-2 overflow-x-auto whitespace-nowrap">
                     <!-- Date buttons will be populated by JS -->
                 </div>
-                <!-- ▲▲▲ 結束新增日期滾動條 ▲▲▲ -->
 
                 <p id="results-count" class="text-sm text-gray-500 mb-4"></p>
                 
@@ -149,14 +273,13 @@
     </div>
 
     <!-- Bottom Tab Bar -->
-    <!-- 這部分移除了手機版的 "登記" 按鈕 -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-20">
+    <nav class="bottom-nav-style fixed bottom-0 left-0 right-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
-            <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
+            <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                 <span class="text-xs font-medium">探索</span>
             </button>
-            <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2 text-gray-500">
+            <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg>
                 <span class="text-xs font-medium">我的行程</span>
             </button>
@@ -164,13 +287,13 @@
     </nav>
     
     <!-- Modal -->
-    <!-- 這部分包含了彈窗置中的修正 -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
+    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 hidden z-30 modal-enter">
         <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs and Logic -->
     <script type="module">
+        // ... (JavaScript 程式碼部分保持不變)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
@@ -185,7 +308,6 @@
             measurementId: "G-733PSHDR5L"
         };
         
-        // Initialize Firebase
         let app;
         let auth;
         let db;
@@ -205,10 +327,9 @@
         let allPlaces = [];
         let allEvents = [];
         let userTrips = [];
-        let currentFilter = 'events'; // ▼▼▼ 預設篩選器已更改 ▼▼▼
-        let selectedDate = 'all'; // ▼▼▼ 新增日期狀態 ▼▼▼
+        let currentFilter = 'events';
+        let selectedDate = 'all';
 
-        // DOM Elements
         const authContainer = document.getElementById('auth-container');
         const sensesContainer = document.getElementById('senses-container');
         const districtSelect = document.getElementById('district-select');
@@ -220,12 +341,11 @@
         const resultFilterButtons = document.querySelectorAll('.filter-btn');
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalContent = document.getElementById('modal-content');
-        const tabButtons = document.querySelectorAll('.tab-btn[data-page]'); // 修正選擇器
+        const tabButtons = document.querySelectorAll('.tab-btn[data-page]');
         const explorePage = document.getElementById('explore-page');
         const plannerPage = document.getElementById('planner-page');
-        const dateScroller = document.getElementById('date-scroller'); // ▼▼▼ 新增 DOM 元素 ▼▼▼
+        const dateScroller = document.getElementById('date-scroller');
 
-        // --- PAGE NAVIGATION ---
         function showPage(pageId) {
             explorePage.classList.add('hidden');
             plannerPage.classList.add('hidden');
@@ -239,8 +359,6 @@
             }
         }
 
-        // --- AUTHENTICATION ---
-        // (此處的 Auth 相關函數 'handleSignIn', 'handleSignOut', 'onAuthStateChanged', 'renderAuthUI' 保持不變)
         const provider = new GoogleAuthProvider();
 
         function handleSignIn() {
@@ -273,45 +391,35 @@
             if (user) {
                 authContainer.innerHTML = `
                     <img src="${user.photoURL}" alt="${user.displayName}" class="w-8 h-8 rounded-full">
-                    <button id="logout-btn" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">登出</button>
+                    <button id="logout-btn" class="py-2 px-4 rounded-lg hover:bg-gray-100/80">登出</button>
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
 
-        // --- TRIP PLANNER LOGIC ---
-        // (此處的 Planner 相關函數 'renderPlannerPage', 'createNewTrip', 'fetchUserTrips', 'renderUserTrips', 'handleAddToTrip', 'addItemToTrip' 保持不變)
         function renderPlannerPage(user) {
             if (!user) {
                 plannerPage.innerHTML = `
                     <div class="text-center py-16">
-                        <h2 class="text-2xl font-bold mb-2">我的行程</h2>
+                        <h2 class="text-2xl font-bold mb-2 tracking-tight">我的行程</h2>
                         <p class="text-gray-600 mb-4">請先登入以查看或建立你的行程。</p>
-                        <button id="planner-login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>
+                        <button id="planner-login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button>
                     </div>
                 `;
-                const loginBtn = document.getElementById('planner-login-btn');
-                if (loginBtn) {
-                    loginBtn.addEventListener('click', handleSignIn);
-                }
+                document.getElementById('planner-login-btn')?.addEventListener('click', handleSignIn);
             } else {
                 plannerPage.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">我的行程</h2>
-                        <button id="new-trip-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">建立新行程</button>
+                        <h2 class="text-2xl font-bold tracking-tight">我的行程</h2>
+                        <button id="new-trip-btn" class="fancy-btn py-2 px-4 rounded-lg">建立新行程</button>
                     </div>
-                    <div id="trips-container" class="space-y-6">
-                        <!-- User trips will be rendered here -->
-                    </div>
+                    <div id="trips-container" class="space-y-6"></div>
                 `;
-                const newTripBtn = document.getElementById('new-trip-btn');
-                if (newTripBtn) {
-                    newTripBtn.addEventListener('click', createNewTrip);
-                }
-                renderUserTrips(); // Render existing trips
+                document.getElementById('new-trip-btn')?.addEventListener('click', createNewTrip);
+                renderUserTrips();
             }
         }
 
@@ -349,16 +457,16 @@
                 return;
             }
             container.innerHTML = userTrips.map(trip => `
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h3 class="text-xl font-bold mb-3">${trip.name}</h3>
+                <div class="bg-white p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
+                    <h3 class="text-xl font-bold mb-3 tracking-tight">${trip.name}</h3>
                     <div class="space-y-3">
                         ${trip.items.length > 0 ? trip.items.map(item => `
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between p-3 bg-gray-50/80 rounded-lg">
                                 <div>
                                     <p class="font-semibold">${item.name || item.title}</p>
                                     <p class="text-sm text-gray-500">${item.category}</p>
                                 </div>
-                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-gray-900">
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-gray-900 font-medium">
                                     查看
                                 </a>
                             </div>
@@ -371,7 +479,7 @@
         async function handleAddToTrip(item) {
             const user = auth?.currentUser;
             if (!user || !db) {
-                console.warn("Please log in to add items to a trip.");
+                alert("請先登入，才能將項目新增到行程中。");
                 return;
             }
             if (userTrips.length === 0) {
@@ -411,9 +519,7 @@
             } catch (e) { console.error("Error adding item to trip: ", e); }
         }
 
-        // --- DATA FETCHING & RENDERING ---
         function fetchData() {
-            // (此處的 'fetchData' 函數保持不變)
             if (!db) {
                 console.error("Firestore DB not initialized.");
                 loader.style.display = 'none';
@@ -445,7 +551,6 @@
         }
         
         function stringToColor(str) {
-            // (此處的 'stringToColor' 函數保持不變)
             if (!str) return '#cccccc';
             let hash = 0;
             for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -458,9 +563,8 @@
         }
         
         function populateSenses() {
-            // (此處的 'populateSenses' 函數保持不變)
             sensesContainer.innerHTML = SENSES.map((sense, index) => 
-                `<button data-sense="${sense}" class="sense-btn border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors">${SENSES_ZH[index]}</button>`
+                `<button data-sense="${sense}" class="sense-btn px-3 py-1.5 rounded-lg text-sm font-medium">${SENSES_ZH[index]}</button>`
             ).join('');
             sensesContainer.addEventListener('click', e => {
                 if (e.target.classList.contains('sense-btn')) {
@@ -471,14 +575,12 @@
         }
 
         function populateDistricts() {
-            // (此處的 'populateDistricts' 函數保持不變)
             const currentSelection = districtSelect.value;
             const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
             districtSelect.innerHTML = `<option value="all">所有地區</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
             districtSelect.value = currentSelection;
         }
 
-        // ▼▼▼ 新增函數：產生日期滾動條 ▼▼▼
         function populateDateScroller() {
             let buttonsHtml = `<button class="date-btn active" data-date="all">所有日子</button>`;
             const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
@@ -487,27 +589,21 @@
                 const date = new Date();
                 date.setDate(date.getDate() + i);
                 
-                const dateString = date.toISOString().split('T')[0]; // "2025-10-24"
-                const day = date.getDate(); // 24
-                const weekday = weekdays[date.getDay()]; // "五"
+                const dateString = date.toISOString().split('T')[0];
+                const day = date.getDate();
+                const weekday = weekdays[date.getDay()];
                 
                 buttonsHtml += `<button class="date-btn" data-date="${dateString}">${day} (${weekday})</button>`;
             }
             dateScroller.innerHTML = buttonsHtml;
         }
-        // ▲▲▲ 結束新增函數 ▲▲▲
 
-
-        // ▼▼▼ `performSearch` 函數已更新 ▼▼▼
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
             const searchQuery = searchInput.value.toLowerCase();
 
-            let results = [];
-            // 根據 currentFilter 決定要載入的數據
-            if (currentFilter === 'places') results.push(...allPlaces);
-            if (currentFilter === 'events') results.push(...allEvents);
+            let results = (currentFilter === 'places') ? [...allPlaces] : [...allEvents];
 
             const filtered = results.filter(item => {
                 const name = item.name || item.title;
@@ -518,66 +614,41 @@
                 const sensesMatch = selectedSenses.length === 0 || selectedSenses.every(s => senses.includes(s));
                 const searchMatch = searchQuery === '' || name.toLowerCase().includes(searchQuery);
 
-                // 1. 現有的日期過濾 (過濾掉已結束的活動)
-                let pastEventMatch = true; // 預設為 true (即 "非已結束活動")
+                let pastEventMatch = true;
                 const isEvent = 'title' in item;
                 if (isEvent && item.end_date) {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0); 
                     try {
-                        let eventEndDate;
-                        if (item.end_date.toDate) { 
-                            eventEndDate = item.end_date.toDate();
-                        } else {
-                            const [year, month, day] = item.end_date.split('-').map(Number);
-                            eventEndDate = new Date(year, month - 1, day);
-                        }
-                        if (eventEndDate < today) {
-                            pastEventMatch = false; // 已結束
-                        }
+                        let eventEndDate = item.end_date.toDate ? item.end_date.toDate() : new Date(item.end_date.split('-').map((n, i) => i === 1 ? n - 1 : n));
+                        if (eventEndDate < today) pastEventMatch = false;
                     } catch(e) { console.warn("Invalid end_date format: ", item.title, e); }
                 }
 
-                // 2. 新增的日期篩選 (根據 'selectedDate')
                 let selectedDateMatch = true;
                 if (isEvent && selectedDate !== 'all') {
-                    // 只在 "活動" 和 "非所有日子" 時才檢查
                     try {
-                        let eventStartDate;
-                        if (item.start_date.toDate) {
-                            eventStartDate = item.start_date.toDate();
-                        } else {
-                            const [year, month, day] = item.start_date.split('-').map(Number);
-                            eventStartDate = new Date(year, month - 1, day);
-                        }
+                        let eventStartDate = item.start_date.toDate ? item.start_date.toDate() : new Date(item.start_date.split('-').map((n, i) => i === 1 ? n - 1 : n));
                         eventStartDate.setHours(0, 0, 0, 0);
-
-                        const filterDate = new Date(selectedDate); // e.g., "2025-10-24"
+                        const filterDate = new Date(selectedDate);
                         filterDate.setHours(0, 0, 0, 0);
-
-                        // 如果活動開始日期 < 篩選日期，則不匹配
-                        if (eventStartDate < filterDate) {
-                            selectedDateMatch = false;
-                        }
+                        if (eventStartDate < filterDate) selectedDateMatch = false;
                     } catch (e) {
                         console.warn('Invalid start_date format for item:', item.title, e);
-                        selectedDateMatch = false; // 無法解析日期，不顯示
+                        selectedDateMatch = false;
                     }
                 }
                 
                 return districtMatch && sensesMatch && searchMatch && pastEventMatch && selectedDateMatch;
             });
 
-            // ▼▼▼ 新增排序邏輯 ▼▼▼
             if (currentFilter === 'events') {
-                // 如果是活動，按 start_date 升序排 (由近到遠)
                 filtered.sort((a, b) => {
                     const dateA = a.start_date?.toDate ? a.start_date.toMillis() : (new Date(a.start_date).getTime() || 0);
                     const dateB = b.start_date?.toDate ? b.start_date.toMillis() : (new Date(b.start_date).getTime() || 0);
                     return (isNaN(dateA) ? Infinity : dateA) - (isNaN(dateB) ? Infinity : dateB);
                 });
             } else {
-                // 如果是小店，按 created_at 降序排 (由新到舊)
                 filtered.sort((a, b) => {
                     const dateA = a.created_at?.toMillis ? a.created_at.toMillis() : (new Date(a.created_at).getTime() || 0);
                     const dateB = b.created_at?.toMillis ? b.created_at.toMillis() : (new Date(b.created_at).getTime() || 0);
@@ -587,40 +658,35 @@
 
             renderResults(filtered);
         }
-        // ▲▲▲ `performSearch` 函數結束 ▲▲▲
 
-
-        // ▼▼▼ `renderResults` 函數已更新 ▼▼▼
         function renderResults(results) {
             resultsGrid.innerHTML = '';
-            
-            // 移除了這裡的排序邏輯，因為它已移至 `performSearch` 中
-
             resultsCount.textContent = `顯示 ${results.length} 個結果`;
             loader.style.display = 'none';
             noResults.style.display = results.length === 0 ? 'block' : 'none';
 
             results.forEach((item, index) => {
-                // (此處的 'renderResults' 內部邏輯保持不變)
                 const isEvent = 'title' in item;
                 const name = item.name || item.title;
                 const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
                 const color = stringToColor(name).substring(1);
-                const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=raleway`;
+                const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=inter`;
                 const card = document.createElement('div');
-                card.className = 'result-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col fade-in';
+                card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
                 card.style.animationDelay = `${index * 50}ms`;
                 card.innerHTML = `
-                    <div class="aspect-video bg-gray-100"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
+                    <div class="aspect-video bg-gray-100 overflow-hidden">
+                        <img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                    </div>
                     <div class="p-4 flex flex-col flex-grow">
-                        <p class="text-xs font-semibold text-gray-500">${item.category || (isEvent ? '活動' : '地點')}</p>
-                        <h3 class="font-bold text-lg mt-1">${name}</h3>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">${item.category || (isEvent ? '活動' : '地點')}</p>
+                        <h3 class="font-bold text-lg mt-1 tracking-tight">${name}</h3>
                         <p class="text-sm text-gray-500">${item.address || item.district}</p>
                         <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                         <div class="mt-auto pt-4 flex gap-2">
-                            <button class="view-details-btn w-full bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">${isEvent ? '查看活動' : '查看小店'}</button>
-                            <button title="新增到我的行程" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-2 rounded-lg hover:bg-gray-200 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                            <button class="view-details-btn w-full bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">${isEvent ? '查看活動' : '查看小店'}</button>
+                            <button title="新增到我的行程" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25-1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                             </button>
                         </div>
                     </div>
@@ -630,44 +696,40 @@
                     e.stopPropagation(); 
                     handleAddToTrip(item);
                     const btn = e.currentTarget;
-                    btn.classList.add('bg-green-200', 'text-green-800');
-                    setTimeout(() => btn.classList.remove('bg-green-200', 'text-green-800'), 1000);
+                    btn.classList.add('bg-green-100', 'text-green-800', 'active-animation');
+                    setTimeout(() => btn.classList.remove('bg-green-100', 'text-green-800', 'active-animation'), 1000);
                 });
                 resultsGrid.appendChild(card);
             });
         }
-        // ▲▲▲ `renderResults` 函數結束 ▲▲▲
         
         function openModal(item) {
-            // (此處的 'openModal' 函數保持不變)
             const isEvent = 'title' in item;
             const name = item.name || item.title;
             const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
             const color = stringToColor(name).substring(1);
-            const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=raleway`;
+            const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=inter`;
             let eventDateStr = '';
             if (isEvent) {
-                let startDate = item.start_date || '';
-                if (startDate.toDate) startDate = startDate.toDate().toLocaleDateString('zh-HK'); 
-                let endDate = item.end_date || '';
-                if (endDate.toDate) endDate = endDate.toDate().toLocaleDateString('zh-HK');
+                let startDate = item.start_date?.toDate ? item.start_date.toDate().toLocaleDateString('zh-HK') : (item.start_date || '');
+                let endDate = item.end_date?.toDate ? item.end_date.toDate().toLocaleDateString('zh-HK') : (item.end_date || '');
                 eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
             }
             modalContent.innerHTML = `
                 <div class="relative">
-                    <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10">
+                    <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
                     </button>
                     <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
-                    <h3 class="font-bold text-xl sm:text-2xl">${name}</h3>
+                    <h3 class="font-bold text-xl sm:text-2xl tracking-tight">${name}</h3>
                     <p class="text-gray-500 mt-1">${item.address || item.district}</p>
                     ${eventDateStr}
-                    <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
                     <div class="mt-6 flex gap-2">
-                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="block w-full text-center bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
-                        <button title="新增到我的行程" id="modal-add-to-trip-btn" class="flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg hover:bg-gray-200 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="fancy-btn block w-full text-center font-bold py-3 px-6 rounded-lg">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
+                        <button title="新增到我的行程" id="modal-add-to-trip-btn" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25-1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                         </button>
                     </div>
                 </div>
@@ -678,43 +740,30 @@
             document.getElementById('modal-add-to-trip-btn').addEventListener('click', (e) => {
                 handleAddToTrip(item);
                 const btn = e.currentTarget;
-                btn.classList.add('bg-green-200', 'text-green-800');
-                setTimeout(() => btn.classList.remove('bg-green-200', 'text-green-800'), 1000);
+                btn.classList.add('bg-green-100', 'text-green-800', 'active-animation');
+                setTimeout(() => btn.classList.remove('bg-green-100', 'text-green-800', 'active-animation'), 1000);
             });
         }
 
         function closeModal() {
-            // (此處的 'closeModal' 函數保持不變)
             modalBackdrop.classList.add('modal-enter');
             setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
         }
 
-        // --- EVENT LISTENERS ---
         districtSelect.addEventListener('change', performSearch);
         searchInput.addEventListener('input', performSearch);
         
-        // ▼▼▼ `resultFilterButtons` 監聽器已更新 ▼▼▼
         resultFilterButtons.forEach(button => {
             button.addEventListener('click', () => {
-                resultFilterButtons.forEach(btn => btn.classList.remove('active', 'text-gray-500'));
+                resultFilterButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                if (!button.classList.contains('active')) {
-                    button.classList.add('text-gray-500');
-                }
                 
                 currentFilter = button.dataset.filter;
+                dateScroller.classList.toggle('hidden', currentFilter !== 'events');
                 
-                // 根據篩選器顯示/隱藏日期滾動條
-                if (currentFilter === 'events') {
-                    dateScroller.classList.remove('hidden');
-                } else {
-                    dateScroller.classList.add('hidden');
-                }
-                
-                // 重置日期篩選
                 selectedDate = 'all';
                 dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-                dateScroller.querySelector('.date-btn[data-date="all"]').classList.add('active');
+                dateScroller.querySelector('.date-btn[data-date="all"]')?.classList.add('active');
 
                 performSearch();
             });
@@ -728,27 +777,24 @@
             });
         });
 
-        // ▼▼▼ 新增日期滾動條的監聽器 ▼▼▼
         dateScroller.addEventListener('click', e => {
-            if (e.target.classList.contains('date-btn')) {
+            const targetButton = e.target.closest('.date-btn');
+            if (targetButton) {
                 dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                selectedDate = e.target.dataset.date;
+                targetButton.classList.add('active');
+                selectedDate = targetButton.dataset.date;
                 performSearch();
             }
         });
 
-        // --- INITIALIZATION ---
         if (db && auth) {
             populateSenses();
-            populateDateScroller(); // ▼▼▼ 新增呼叫 ▼▼▼
+            populateDateScroller();
             fetchData();
             showPage('explore-page'); 
         } else {
              console.log("Firebase not ready, skipping initial data load and UI setup.");
         }
-
     </script>
 </body>
 </html>
-
