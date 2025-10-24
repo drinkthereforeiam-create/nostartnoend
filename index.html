@@ -307,17 +307,15 @@
         measurementId: "G-733PSHDR5L"
     };
     
-    let app;
-    let auth;
-    let db;
+    let app, auth, db;
     try {
         app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
-        console.log("Firebase initialized successfully.");
+        console.log("✅ Firebase initialized successfully.");
     } catch (e) {
-        console.error("Firebase initialization error:", e);
-        document.body.innerHTML = `<p style="color: red; padding: 20px;">Error initializing Firebase. Please check the console and your config.</p>`;
+        console.error("❌ Firebase initialization error:", e);
+        document.body.innerHTML = `<p style="color: red; padding: 20px;">Error initializing Firebase. Check console.</p>`;
     }
 
     const SENSES = ['Eye', 'Ear', 'Nose', 'Tongue', 'Body', 'Mind'];
@@ -329,6 +327,7 @@
     let currentFilter = 'events';
     let selectedDate = 'all';
 
+    // DOM Elements
     const authContainer = document.getElementById('auth-container');
     const sensesContainer = document.getElementById('senses-container');
     const districtSelect = document.getElementById('district-select');
@@ -345,210 +344,36 @@
     const plannerPage = document.getElementById('planner-page');
     const dateScroller = document.getElementById('date-scroller');
 
-    function showPage(pageId) {
-        explorePage.classList.add('hidden');
-        plannerPage.classList.add('hidden');
-        document.getElementById(pageId).classList.remove('hidden');
-
-        tabButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.page === pageId);
-        });
-        if (pageId === 'planner-page' && auth) {
-            renderPlannerPage(auth.currentUser);
-        }
-    }
-
-    const provider = new GoogleAuthProvider();
-
-    function handleSignIn() {
-        if (!auth) { console.error("Auth not initialized."); return; }
-        signInWithPopup(auth, provider).catch(error => console.error("Sign in error:", error));
-    }
-
-    function handleSignOut() {
-        if (!auth) { console.error("Auth not initialized."); return; }
-        signOut(auth).catch(error => console.error("Sign out error:", error));
-    }
-
-    if (auth) {
-         onAuthStateChanged(auth, user => {
-            renderAuthUI(user);
-            renderPlannerPage(user);
-            if (user && db) { 
-                fetchUserTrips(user.uid);
-            } else {
-                userTrips = [];
-                if (plannerPage.classList.contains('hidden') === false) {
-                    renderPlannerPage(null);
+    // --- Helper Functions ---
+    // 安全的日期解析器，處理各種可能的 Firestore 日期格式
+    function parseFirestoreDate(dateField) {
+        if (!dateField) return null;
+        try {
+            // 如果是 Firestore Timestamp
+            if (typeof dateField.toDate === 'function') {
+                return dateField.toDate();
+            }
+            // 如果已經是 Date 物件
+            if (dateField instanceof Date) {
+                return dateField;
+            }
+            // 如果是字串
+            if (typeof dateField === 'string') {
+                // 嘗試標準轉換
+                let d = new Date(dateField);
+                if (!isNaN(d.getTime())) return d;
+                // 嘗試處理 "YYYY-MM-DD" 格式
+                const parts = dateField.split('-');
+                if (parts.length === 3) {
+                    return new Date(parts[0], parts[1] - 1, parts[2]);
                 }
             }
-         });
+        } catch (e) {
+            console.warn("Error parsing date:", dateField, e);
+        }
+        return null;
     }
 
-    function renderAuthUI(user) {
-        authContainer.innerHTML = '';
-        if (user) {
-            authContainer.innerHTML = `
-                <img src="${user.photoURL}" alt="${user.displayName}" class="w-8 h-8 rounded-full">
-                <button id="logout-btn" class="py-2 px-4 rounded-lg hover:bg-gray-100/80">登出</button>
-            `;
-            document.getElementById('logout-btn').addEventListener('click', handleSignOut);
-        } else {
-            authContainer.innerHTML = `<button id="login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button>`;
-            document.getElementById('login-btn').addEventListener('click', handleSignIn);
-        }
-    }
-
-    function renderPlannerPage(user) {
-        if (!user) {
-            plannerPage.innerHTML = `
-                <div class="text-center py-16">
-                    <h2 class="text-2xl font-bold mb-2 tracking-tight">我的行程</h2>
-                    <p class="text-gray-600 mb-4">請先登入以查看或建立你的行程。</p>
-                    <button id="planner-login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button>
-                </div>
-            `;
-            document.getElementById('planner-login-btn')?.addEventListener('click', handleSignIn);
-        } else {
-            plannerPage.innerHTML = `
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold tracking-tight">我的行程</h2>
-                    <button id="new-trip-btn" class="fancy-btn py-2 px-4 rounded-lg">建立新行程</button>
-                </div>
-                <div id="trips-container" class="space-y-6"></div>
-            `;
-            document.getElementById('new-trip-btn')?.addEventListener('click', createNewTrip);
-            renderUserTrips();
-        }
-    }
-
-    async function createNewTrip() {
-        const user = auth?.currentUser;
-        if (!user || !db) return;
-        const tripName = prompt("請輸入新行程的名稱：", "我的香港之旅");
-        if (tripName) {
-            try {
-                await addDoc(collection(db, "trips"), {
-                    userId: user.uid,
-                    name: tripName,
-                    createdAt: Timestamp.now(),
-                    items: []
-                });
-            } catch (e) { console.error("Error creating new trip: ", e); }
-        }
-    }
-
-    function fetchUserTrips(userId) {
-        if (!db) return;
-        const q = query(collection(db, "trips"), where("userId", "==", userId));
-        onSnapshot(q, (snapshot) => {
-            userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            userTrips.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-            renderUserTrips();
-        }, (error) => { console.error("Error fetching user trips: ", error); });
-    }
-
-    function renderUserTrips() {
-        const container = document.getElementById('trips-container');
-        if (!container) return; 
-        if (userTrips.length === 0) {
-            container.innerHTML = `<p class="text-gray-500 text-center">你尚未建立任何行程。</p>`;
-            return;
-        }
-        container.innerHTML = userTrips.map(trip => `
-            <div class="bg-white p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
-                <h3 class="text-xl font-bold mb-3 tracking-tight">${trip.name}</h3>
-                <div class="space-y-3">
-                    ${trip.items.length > 0 ? trip.items.map(item => `
-                        <div class="flex items-center justify-between p-3 bg-gray-50/80 rounded-lg">
-                            <div>
-                                <p class="font-semibold">${item.name || item.title}</p>
-                                <p class="text-sm text-gray-500">${item.category}</p>
-                            </div>
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-gray-900 font-medium">
-                                查看
-                            </a>
-                        </div>
-                    `).join('') : '<p class="text-sm text-gray-500">這個行程中還沒有項目。</p>'}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    async function handleAddToTrip(item) {
-        const user = auth?.currentUser;
-        if (!user || !db) {
-            alert("請先登入，才能將項目新增到行程中。");
-            return;
-        }
-        if (userTrips.length === 0) {
-            const tripName = "我的香港之旅";
-            try {
-                const newTripRef = await addDoc(collection(db, "trips"), {
-                    userId: user.uid,
-                    name: tripName,
-                    createdAt: Timestamp.now(),
-                    items: []
-                });
-                addItemToTrip(newTripRef.id, item);
-            } catch (e) { console.error("Error creating new trip: ", e); }
-        } else {
-            addItemToTrip(userTrips[0].id, item);
-        }
-    }
-
-    async function addItemToTrip(tripId, item) {
-        if (!db) return;
-        const tripRef = doc(db, "trips", tripId);
-        try {
-            const itemStub = {
-                id: item.id || null, 
-                name: item.name || item.title,
-                category: item.category || (item.title ? '活動' : '地點'),
-                url: item.url
-            };
-            const currentTrip = userTrips.find(t => t.id === tripId);
-            const itemExists = currentTrip?.items.some(i => (i.id && i.id === itemStub.id) || (i.name === itemStub.name));
-            if (!itemExists) {
-                await updateDoc(tripRef, { items: arrayUnion(itemStub) });
-                console.log("Item added to trip!");
-            } else {
-                console.log("Item already in trip.");
-            }
-        } catch (e) { console.error("Error adding item to trip: ", e); }
-    }
-
-    function fetchData() {
-        if (!db) {
-            console.error("Firestore DB not initialized.");
-            loader.style.display = 'none';
-            resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料 (DB Error)。</p>`;
-            return;
-        }
-        loader.style.display = 'block';
-        const handleSnapshot = (snapshot, type) => {
-            const dataArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if (type === 'places') allPlaces = dataArray;
-            if (type === 'events') allEvents = dataArray;
-            populateDistricts();
-            performSearch();
-        };
-        const handleError = (type, error) => {
-            console.error(`Error fetching ${type}:`, error);
-            loader.style.display = 'none';
-            if (!resultsGrid.querySelector('.text-red-500')) {
-                resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料，請稍後再試。</p>`;
-            }
-        };
-        try {
-            onSnapshot(collection(db, "places"), (snap) => handleSnapshot(snap, 'places'), (err) => handleError('places', err));
-            onSnapshot(collection(db, "events"), (snap) => handleSnapshot(snap, 'events'), (err) => handleError('events', err));
-        } catch(e) {
-            console.error("Error setting up Firestore listeners:", e);
-            handleError("data", e);
-        }
-    }
-    
     function stringToColor(str) {
         if (!str) return '#cccccc';
         let hash = 0;
@@ -560,132 +385,218 @@
         }
         return color;
     }
-    
-    function populateSenses() {
-        sensesContainer.innerHTML = SENSES.map((sense, index) => 
-            `<button data-sense="${sense}" class="sense-btn px-3 py-1.5 rounded-lg text-sm font-medium">${SENSES_ZH[index]}</button>`
-        ).join('');
-        sensesContainer.addEventListener('click', e => {
-            if (e.target.classList.contains('sense-btn')) {
-                e.target.classList.toggle('active');
-                performSearch();
+
+    // --- Main Logic ---
+    function showPage(pageId) {
+        explorePage.classList.add('hidden');
+        plannerPage.classList.add('hidden');
+        document.getElementById(pageId).classList.remove('hidden');
+        tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === pageId));
+        if (pageId === 'planner-page' && auth) renderPlannerPage(auth.currentUser);
+    }
+
+    // --- Auth & Planner ---
+    const provider = new GoogleAuthProvider();
+    function handleSignIn() { signInWithPopup(auth, provider).catch(e => console.error("Sign in error:", e)); }
+    function handleSignOut() { signOut(auth).catch(e => console.error("Sign out error:", e)); }
+
+    if (auth) {
+         onAuthStateChanged(auth, user => {
+            renderAuthUI(user);
+            renderPlannerPage(user);
+            if (user && db) { 
+                fetchUserTrips(user.uid);
+            } else {
+                userTrips = [];
+                if (!plannerPage.classList.contains('hidden')) renderPlannerPage(null);
             }
-        });
+         });
+    }
+
+    function renderAuthUI(user) {
+        authContainer.innerHTML = user ? 
+            `<img src="${user.photoURL}" alt="${user.displayName}" class="w-8 h-8 rounded-full"><button id="logout-btn" class="py-2 px-4 rounded-lg hover:bg-gray-100/80">登出</button>` : 
+            `<button id="login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button>`;
+        if (user) document.getElementById('logout-btn').addEventListener('click', handleSignOut);
+        else document.getElementById('login-btn').addEventListener('click', handleSignIn);
+    }
+
+    function renderPlannerPage(user) {
+        if (!user) {
+            plannerPage.innerHTML = `<div class="text-center py-16"><h2 class="text-2xl font-bold mb-2 tracking-tight">我的行程</h2><p class="text-gray-600 mb-4">請先登入以查看或建立你的行程。</p><button id="planner-login-btn" class="fancy-btn py-2 px-4 rounded-lg">Google 登入</button></div>`;
+            document.getElementById('planner-login-btn')?.addEventListener('click', handleSignIn);
+        } else {
+            plannerPage.innerHTML = `<div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold tracking-tight">我的行程</h2><button id="new-trip-btn" class="fancy-btn py-2 px-4 rounded-lg">建立新行程</button></div><div id="trips-container" class="space-y-6"></div>`;
+            document.getElementById('new-trip-btn')?.addEventListener('click', createNewTrip);
+            renderUserTrips();
+        }
+    }
+
+    async function createNewTrip() {
+        const user = auth?.currentUser;
+        if (!user || !db) return;
+        const tripName = prompt("請輸入新行程的名稱：", "我的香港之旅");
+        if (tripName) await addDoc(collection(db, "trips"), { userId: user.uid, name: tripName, createdAt: Timestamp.now(), items: [] });
+    }
+
+    function fetchUserTrips(userId) {
+        if (!db) return;
+        onSnapshot(query(collection(db, "trips"), where("userId", "==", userId)), 
+            (snapshot) => {
+                userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                userTrips.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                renderUserTrips();
+            }, 
+            (error) => console.error("Error fetching user trips: ", error)
+        );
+    }
+
+    function renderUserTrips() {
+        const container = document.getElementById('trips-container');
+        if (!container) return; 
+        container.innerHTML = userTrips.length === 0 ? 
+            `<p class="text-gray-500 text-center">你尚未建立任何行程。</p>` : 
+            userTrips.map(trip => `
+                <div class="bg-white p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
+                    <h3 class="text-xl font-bold mb-3 tracking-tight">${trip.name}</h3>
+                    <div class="space-y-3">${trip.items.length > 0 ? trip.items.map(item => `
+                        <div class="flex items-center justify-between p-3 bg-gray-50/80 rounded-lg">
+                            <div><p class="font-semibold">${item.name || item.title}</p><p class="text-sm text-gray-500">${item.category}</p></div>
+                            <a href="${item.url}" target="_blank" class="text-sm text-gray-600 hover:text-gray-900 font-medium">查看</a>
+                        </div>`).join('') : '<p class="text-sm text-gray-500">這個行程中還沒有項目。</p>'}
+                    </div>
+                </div>`).join('');
+    }
+
+    async function handleAddToTrip(item) {
+        const user = auth?.currentUser;
+        if (!user || !db) { alert("請先登入，才能將項目新增到行程中。"); return; }
+        try {
+            let tripId;
+            if (userTrips.length === 0) {
+                const ref = await addDoc(collection(db, "trips"), { userId: user.uid, name: "我的香港之旅", createdAt: Timestamp.now(), items: [] });
+                tripId = ref.id;
+            } else { tripId = userTrips[0].id; }
+            
+            const currentTrip = userTrips.find(t => t.id === tripId);
+            const itemName = item.name || item.title;
+            if (!currentTrip?.items.some(i => (i.id && i.id === item.id) || (i.name === itemName))) {
+                await updateDoc(doc(db, "trips", tripId), { items: arrayUnion({ id: item.id || null, name: itemName, category: item.category || (item.title ? '活動' : '地點'), url: item.url }) });
+                console.log("✅ Item added to trip!");
+            }
+        } catch (e) { console.error("Error adding to trip:", e); }
+    }
+
+    // --- Data Fetching & Rendering ---
+    function fetchData() {
+        if (!db) return;
+        console.log("🔄 Starting fetchData...");
+        loader.style.display = 'block';
+        
+        const handleSnapshot = (snapshot, type) => {
+            console.log(`📡 Received ${type} snapshot: ${snapshot.docs.length} docs`);
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (type === 'places') allPlaces = data;
+            if (type === 'events') allEvents = data;
+            populateDistricts();
+            performSearch();
+        };
+        
+        const handleError = (type, error) => {
+            console.error(`❌ Error fetching ${type}:`, error);
+            loader.style.display = 'none';
+            resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料，請檢查網絡連線。</p>`;
+        };
+
+        try {
+            onSnapshot(collection(db, "places"), (snap) => handleSnapshot(snap, 'places'), (err) => handleError('places', err));
+            onSnapshot(collection(db, "events"), (snap) => handleSnapshot(snap, 'events'), (err) => handleError('events', err));
+        } catch(e) {
+            console.error("❌ Error setting up listeners:", e);
+        }
+    }
+
+    function populateSenses() {
+        sensesContainer.innerHTML = SENSES.map((sense, i) => `<button data-sense="${sense}" class="sense-btn px-3 py-1.5 rounded-lg text-sm font-medium">${SENSES_ZH[i]}</button>`).join('');
+        sensesContainer.addEventListener('click', e => { if (e.target.classList.contains('sense-btn')) { e.target.classList.toggle('active'); performSearch(); }});
     }
 
     function populateDistricts() {
-        const currentSelection = districtSelect.value;
+        const current = districtSelect.value;
         const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
         districtSelect.innerHTML = `<option value="all">所有地區</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
-        districtSelect.value = currentSelection;
+        districtSelect.value = current;
     }
 
     function populateDateScroller() {
-        let buttonsHtml = `<button class="date-btn active" data-date="all">所有日子</button>`;
+        let html = `<button class="date-btn active" data-date="all">所有日子</button>`;
         const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-        
         for (let i = 0; i < 6; i++) {
-            const date = new Date();
-            date.setDate(date.getDate() + i);
-            
-            const dateString = date.toISOString().split('T')[0];
-            const day = date.getDate();
-            const weekday = weekdays[date.getDay()];
-            
-            buttonsHtml += `<button class="date-btn" data-date="${dateString}">${day} (${weekday})</button>`;
+            const d = new Date(); d.setDate(d.getDate() + i);
+            html += `<button class="date-btn" data-date="${d.toISOString().split('T')[0]}">${d.getDate()} (${weekdays[d.getDay()]})</button>`;
         }
-        dateScroller.innerHTML = buttonsHtml;
+        dateScroller.innerHTML = html;
     }
 
-    // ▼▼▼ 已修正此函數中的日期處理邏輯 ▼▼▼
     function performSearch() {
+        // console.log("🔍 Performing search..."); // Debug log
         const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
         const selectedDistrict = districtSelect.value;
         const searchQuery = searchInput.value.toLowerCase();
+        const isEventMode = currentFilter === 'events';
 
-        let results = (currentFilter === 'places') ? [...allPlaces] : [...allEvents];
+        let results = isEventMode ? allEvents : allPlaces;
 
         const filtered = results.filter(item => {
-            const name = item.name || item.title;
-            if (!name) return false; 
+            if (!(item.name || item.title)) return false;
             
+            // 1. 基本篩選
             const districtMatch = selectedDistrict === 'all' || item.district === selectedDistrict;
             const senses = item.senses || item.selected_senses || '';
             const sensesMatch = selectedSenses.length === 0 || selectedSenses.every(s => senses.includes(s));
-            const searchMatch = searchQuery === '' || name.toLowerCase().includes(searchQuery);
+            const searchMatch = searchQuery === '' || (item.name || item.title).toLowerCase().includes(searchQuery);
 
-            let pastEventMatch = true;
-            const isEvent = 'title' in item;
-            if (isEvent && item.end_date) {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); 
-                try {
-                    let eventEndDate;
-                    // 更穩定的日期解析
-                    if (item.end_date.toDate) { 
-                        eventEndDate = item.end_date.toDate();
-                    } else {
-                        const parts = String(item.end_date).split('-').map(Number);
-                        eventEndDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                    }
-                    if (eventEndDate < today) pastEventMatch = false;
-                } catch(e) { console.warn("Invalid end_date format: ", item.title, e); }
-            }
+            if (!districtMatch || !sensesMatch || !searchMatch) return false;
 
-            let selectedDateMatch = true;
-            if (isEvent && selectedDate !== 'all' && item.start_date) {
-                try {
-                    let eventStartDate;
-                    if (item.start_date.toDate) {
-                        eventStartDate = item.start_date.toDate();
-                    } else {
-                        const parts = String(item.start_date).split('-').map(Number);
-                        eventStartDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                    }
-                    eventStartDate.setHours(0, 0, 0, 0);
+            // 2. 日期篩選 (僅針對活動)
+            if (isEventMode) {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const eventEnd = parseFirestoreDate(item.end_date);
+                
+                // 過濾掉已結束的活動
+                if (eventEnd && eventEnd < today) return false;
 
-                    // 如果沒有結束日期，則預設為開始日期
-                    let eventEndDate = eventStartDate;
-                    if (item.end_date) {
-                         if (item.end_date.toDate) {
-                            eventEndDate = item.end_date.toDate();
-                        } else {
-                            const parts = String(item.end_date).split('-').map(Number);
-                            eventEndDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                        }
-                    }
-                    eventEndDate.setHours(23, 59, 59, 999);
+                // 指定日期篩選
+                if (selectedDate !== 'all') {
+                    const filterDate = new Date(selectedDate); filterDate.setHours(0,0,0,0);
+                    const eventStart = parseFirestoreDate(item.start_date);
+                    // 如果無法解析開始日期，則不顯示
+                    if (!eventStart) return false; 
 
-                    const filterDate = new Date(selectedDate);
-                    filterDate.setHours(0, 0, 0, 0);
+                    eventStart.setHours(0,0,0,0);
+                    // 如果沒有結束日期，假設它只在開始日期當天有效
+                    const effectiveEnd = eventEnd ? eventEnd : new Date(eventStart);
+                    effectiveEnd.setHours(23,59,59,999);
 
-                    // 檢查篩選日期是否落在活動的開始和結束日期之間
-                    if (!(filterDate >= eventStartDate && filterDate <= eventEndDate)) {
-                        selectedDateMatch = false;
-                    }
-
-                } catch (e) {
-                    console.warn('Invalid start_date/end_date format for item:', item.title, e);
-                    selectedDateMatch = false;
+                    // 檢查篩選日期是否在活動期間內
+                    if (!(filterDate >= eventStart && filterDate <= effectiveEnd)) return false;
                 }
             }
-            
-            return districtMatch && sensesMatch && searchMatch && pastEventMatch && selectedDateMatch;
+            return true;
         });
 
-        if (currentFilter === 'events') {
-            filtered.sort((a, b) => {
-                const dateA = a.start_date?.toDate ? a.start_date.toMillis() : (new Date(a.start_date).getTime() || 0);
-                const dateB = b.start_date?.toDate ? b.start_date.toMillis() : (new Date(b.start_date).getTime() || 0);
-                return (isNaN(dateA) ? Infinity : dateA) - (isNaN(dateB) ? Infinity : dateB);
-            });
-        } else {
-            filtered.sort((a, b) => {
-                const dateA = a.created_at?.toMillis ? a.created_at.toMillis() : (new Date(a.created_at).getTime() || 0);
-                const dateB = b.created_at?.toMillis ? b.created_at.toMillis() : (new Date(b.created_at).getTime() || 0);
-                return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
-            });
-        }
+        // 排序
+        filtered.sort((a, b) => {
+            if (isEventMode) {
+                const dateA = parseFirestoreDate(a.start_date)?.getTime() || Infinity;
+                const dateB = parseFirestoreDate(b.start_date)?.getTime() || Infinity;
+                return dateA - dateB;
+            } else {
+                const dateA = parseFirestoreDate(a.created_at)?.getTime() || 0;
+                const dateB = parseFirestoreDate(b.created_at)?.getTime() || 0;
+                return dateB - dateA;
+            }
+        });
 
         renderResults(filtered);
     }
@@ -701,31 +612,28 @@
             const name = item.name || item.title;
             const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
             const color = stringToColor(name).substring(1);
-            const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=inter`;
             const card = document.createElement('div');
             card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
-            card.style.animationDelay = `${index * 50}ms`;
+            card.style.animationDelay = `${Math.min(index * 50, 1000)}ms`; // 限制最大延遲
             card.innerHTML = `
                 <div class="aspect-video bg-gray-100 overflow-hidden">
-                    <img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                    <img src="https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=inter" alt="${name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy">
                 </div>
                 <div class="p-4 flex flex-col flex-grow">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">${item.category || (isEvent ? '活動' : '地點')}</p>
-                    <h3 class="font-bold text-lg mt-1 tracking-tight">${name}</h3>
-                    <p class="text-sm text-gray-500">${item.address || item.district}</p>
+                    <h3 class="font-bold text-lg mt-1 tracking-tight line-clamp-2">${name}</h3>
+                    <p class="text-sm text-gray-500 line-clamp-1">${item.address || item.district || ''}</p>
                     <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <div class="mt-auto pt-4 flex gap-2">
                         <button class="view-details-btn w-full bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">${isEvent ? '查看活動' : '查看小店'}</button>
                         <button title="新增到我的行程" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25-1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                         </button>
                     </div>
-                </div>
-            `;
+                </div>`;
             card.querySelector('.view-details-btn').addEventListener('click', () => openModal(item));
             card.querySelector('.add-to-trip-btn').addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                handleAddToTrip(item);
+                e.stopPropagation(); handleAddToTrip(item);
                 const btn = e.currentTarget;
                 btn.classList.add('bg-green-100', 'text-green-800', 'active-animation');
                 setTimeout(() => btn.classList.remove('bg-green-100', 'text-green-800', 'active-animation'), 1000);
@@ -733,38 +641,40 @@
             resultsGrid.appendChild(card);
         });
     }
-    
+
     function openModal(item) {
         const isEvent = 'title' in item;
         const name = item.name || item.title;
         const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
         const color = stringToColor(name).substring(1);
-        const placeholderImgUrl = `https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=inter`;
-        let eventDateStr = '';
+        let dateStr = '';
         if (isEvent) {
-            let startDate = item.start_date?.toDate ? item.start_date.toDate().toLocaleDateString('zh-HK') : (item.start_date || '');
-            let endDate = item.end_date?.toDate ? item.end_date.toDate().toLocaleDateString('zh-HK') : (item.end_date || '');
-            eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
+             const start = parseFirestoreDate(item.start_date);
+             const end = parseFirestoreDate(item.end_date);
+             if (start) {
+                 dateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${start.toLocaleDateString('zh-HK')}${end && end.getTime() !== start.getTime() ? ' - ' + end.toLocaleDateString('zh-HK') : ''}</p>`;
+             }
         }
         modalContent.innerHTML = `
             <div class="relative">
                 <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
                 </button>
-                <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
+                <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4">
+                    <img src="https://placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=inter" alt="${name}" class="w-full h-full object-cover">
+                </div>
                 <h3 class="font-bold text-xl sm:text-2xl tracking-tight">${name}</h3>
-                <p class="text-gray-500 mt-1">${item.address || item.district}</p>
-                ${eventDateStr}
+                <p class="text-gray-500 mt-1">${item.address || item.district || ''}</p>
+                ${dateStr}
                 <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
-                <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
+                <p class="text-gray-600 mt-4 whitespace-pre-line">${item.description || '暫無描述。'}</p>
                 <div class="mt-6 flex gap-2">
                     <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="fancy-btn block w-full text-center font-bold py-3 px-6 rounded-lg">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
                     <button title="新增到我的行程" id="modal-add-to-trip-btn" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25-1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                     </button>
                 </div>
-            </div>
-        `;
+            </div>`;
         modalBackdrop.classList.remove('hidden');
         setTimeout(() => modalBackdrop.classList.remove('modal-enter'), 10);
         document.getElementById('modal-close-btn').addEventListener('click', closeModal);
@@ -775,57 +685,35 @@
             setTimeout(() => btn.classList.remove('bg-green-100', 'text-green-800', 'active-animation'), 1000);
         });
     }
+    function closeModal() { modalBackdrop.classList.add('modal-enter'); setTimeout(() => modalBackdrop.classList.add('hidden'), 300); }
 
-    function closeModal() {
-        modalBackdrop.classList.add('modal-enter');
-        setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
-    }
-
+    // --- Event Listeners ---
     districtSelect.addEventListener('change', performSearch);
     searchInput.addEventListener('input', performSearch);
-    
-    resultFilterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            resultFilterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            currentFilter = button.dataset.filter;
-            dateScroller.classList.toggle('hidden', currentFilter !== 'events');
-            
-            selectedDate = 'all';
-            dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-            dateScroller.querySelector('.date-btn[data-date="all"]')?.classList.add('active');
-
-            performSearch();
-        });
-    });
-    
     modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            showPage(button.dataset.page);
-        });
-    });
-
+    tabButtons.forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
+    resultFilterButtons.forEach(btn => btn.addEventListener('click', () => {
+        resultFilterButtons.forEach(b => b.classList.remove('active')); btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        dateScroller.classList.toggle('hidden', currentFilter !== 'events');
+        selectedDate = 'all';
+        dateScroller.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+        dateScroller.querySelector('.date-btn[data-date="all"]')?.classList.add('active');
+        performSearch();
+    }));
     dateScroller.addEventListener('click', e => {
-        const targetButton = e.target.closest('.date-btn');
-        if (targetButton) {
-            dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-            targetButton.classList.add('active');
-            selectedDate = targetButton.dataset.date;
-            performSearch();
+        const btn = e.target.closest('.date-btn');
+        if (btn) {
+            dateScroller.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active'); selectedDate = btn.dataset.date; performSearch();
         }
     });
 
+    // --- Init ---
     if (db && auth) {
-        populateSenses();
-        populateDateScroller();
-        fetchData();
-        showPage('explore-page'); 
-    } else {
-         console.log("Firebase not ready, skipping initial data load and UI setup.");
-    }
+        console.log("🚀 App Starting...");
+        populateSenses(); populateDateScroller(); fetchData(); showPage('explore-page');
+    } else { console.error("❌ Firebase not ready."); }
 </script>
 </body>
 </html>
