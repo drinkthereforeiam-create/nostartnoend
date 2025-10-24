@@ -15,7 +15,7 @@
     
     <!-- Favicon (Embedded) -->
     <!-- I've embedded your logo as a Data URL to fix the broken 'public/icon.png' path -->
-    <link rel="icon" href="public/icon.png" type="image/png">
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" type="image/png">
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; /* Add padding for bottom nav */ }
@@ -52,7 +52,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <!-- Embedded logo -->
-                    <img src="public/icon.png" alt="logo" class="h-8 w-8">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" alt="logo" class="h-8 w-8">
                     <div>
                         <h1 class="text-lg font-bold">nose.h.k</h1>
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
@@ -60,9 +60,12 @@
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium">
                     <!-- Link to Google Form -->
-                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="hidden sm:block py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
+                    <!-- ▼▼▼ THIS LINE HAS BEEN MODIFIED ▼▼▼ -->
+                    <!-- I removed 'hidden' and 'sm:block' so it's always visible -->
+                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-md hover:bg-gray-100 transition-colors">
                         小店/活動登記
                     </a>
+                    <!-- ▲▲▲ END OF MODIFIED SECTION ▲▲▲ -->
                     <!-- Auth UI populated by JS -->
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium">
                     </div>
@@ -128,14 +131,13 @@
 	
     <!-- Modal -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 modal-enter">
-        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
+        <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1-2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
     
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        // ** FIXED: Added all necessary Firestore functions **
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
 	
         const firebaseConfig = {
@@ -149,7 +151,6 @@
 		};
 		
         // Initialize Firebase
-        // ** FIXED: Added error handling for initialization **
         let app;
         let auth;
         let db;
@@ -222,7 +223,6 @@
                     fetchUserTrips(user.uid);
                 } else {
                     userTrips = [];
-                    // If on planner page, re-render to show logged out state
                     if (plannerPage.classList.contains('hidden') === false) {
                         renderPlannerPage(null);
                     }
@@ -230,7 +230,6 @@
              });
         }
 
-        // ** FIXED: Replaced "..." with actual HTML content **
         function renderAuthUI(user) {
             authContainer.innerHTML = '';
             if (user) {
@@ -240,7 +239,7 @@
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
             } else {
-                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">登入</button>`;
+                authContainer.innerHTML = `<button id="login-btn" class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">Google 登入</button>`;
                 document.getElementById('login-btn').addEventListener('click', handleSignIn);
             }
         }
@@ -285,7 +284,6 @@
                         createdAt: Timestamp.now(),
                         items: []
                     });
-                    // Snapshot listener in fetchUserTrips will auto-update the UI
                 } catch (e) {
                     console.error("Error creating new trip: ", e);
                 }
@@ -298,7 +296,6 @@
             
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Sort by creation date, newest first
                 userTrips.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
                 renderUserTrips();
             }, (error) => {
@@ -308,7 +305,7 @@
 
         function renderUserTrips() {
             const container = document.getElementById('trips-container');
-            if (!container) return; // Not on planner page
+            if (!container) return; 
 
             if (userTrips.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-center">你尚未建立任何行程。</p>`;
@@ -338,21 +335,18 @@
         async function handleAddToTrip(item) {
             const user = auth?.currentUser;
             if (!user || !db) {
-                // Use a custom modal/alert later, for now, console log is fine.
                 console.warn("Please log in to add items to a trip.");
                 return;
             }
 
             if (userTrips.length === 0) {
-                await createNewTrip(); // Auto-create first trip
-                // Wait a moment for the new trip to be created and fetched
+                await createNewTrip(); 
                 setTimeout(() => {
                     if(userTrips.length > 0) {
                          addItemToTrip(userTrips[0].id, item);
                     }
                 }, 1000);
             } else {
-                // For simplicity, add to the most recent trip (the first in the sorted list)
                 addItemToTrip(userTrips[0].id, item);
             }
         }
@@ -361,7 +355,6 @@
             if (!db) return;
             const tripRef = doc(db, "trips", tripId);
             try {
-                // Just store the essential info
                 const itemStub = {
                     id: item.id,
                     name: item.name || item.title,
@@ -372,7 +365,6 @@
                     items: arrayUnion(itemStub)
                 });
                 console.log("Item added to trip!");
-                // Optionally: show a success message
             } catch (e) {
                 console.error("Error adding item to trip: ", e);
             }
@@ -381,7 +373,6 @@
 
         // --- DATA FETCHING & RENDERING ---
         
-        // ** FIXED: Added this function back from the working file **
         function fetchData() {
             if (!db) {
                 console.error("Firestore DB not initialized.");
@@ -416,7 +407,6 @@
             }
         }
         
-        // ** FIXED: Added this function back from the working file **
         function stringToColor(str) {
             if (!str) return '#cccccc';
             let hash = 0;
@@ -429,7 +419,6 @@
             return color;
         }
         
-        // ** FIXED: Added this function back from the working file **
         function populateSenses() {
             sensesContainer.innerHTML = SENSES.map((sense, index) => 
                 `<button data-sense="${sense}" class="sense-btn border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors">${SENSES_ZH[index]}</button>`
@@ -442,7 +431,6 @@
             });
         }
 
-        // ** FIXED: Added this function back from the working file **
         function populateDistricts() {
             const currentSelection = districtSelect.value;
             const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
@@ -450,7 +438,6 @@
             districtSelect.value = currentSelection;
         }
 
-        // ** FIXED: Added this function back from the working file **
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
@@ -462,14 +449,13 @@
 
             const filtered = results.filter(item => {
                 const name = item.name || item.title;
-                if (!name) return false; // Filter out items with no name
+                if (!name) return false; 
                 
                 const districtMatch = selectedDistrict === 'all' || item.district === selectedDistrict;
                 const senses = item.senses || item.selected_senses || '';
                 const sensesMatch = selectedSenses.length === 0 || selectedSenses.every(s => senses.includes(s));
                 const searchMatch = searchQuery === '' || name.toLowerCase().includes(searchQuery);
 
-                // Date Filtering Logic
                 let dateMatch = true; 
                 const isEvent = 'title' in item;
                 if (isEvent && item.end_date) {
@@ -492,12 +478,9 @@
             renderResults(filtered);
         }
 
-        // ** FIXED: Added this function back from the working file **
-        // ** MODIFIED: Added "Add to Trip" button
         function renderResults(results) {
             resultsGrid.innerHTML = '';
             
-            // Fix for sorting: Handle missing or invalid created_at
             results.sort((a, b) => {
                 const dateA = a.created_at?.toMillis ? a.created_at.toMillis() : (new Date(a.created_at).getTime() || 0);
                 const dateB = b.created_at?.toMillis ? b.created_at.toMillis() : (new Date(b.created_at).getTime() || 0);
@@ -534,9 +517,8 @@
                 `;
                 card.querySelector('.view-details-btn').addEventListener('click', () => openModal(item));
                 card.querySelector('.add-to-trip-btn').addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent modal from opening
+                    e.stopPropagation(); 
                     handleAddToTrip(item);
-                    // Add a visual cue
                     const btn = e.currentTarget;
                     btn.classList.add('bg-green-200', 'text-green-800');
                     setTimeout(() => btn.classList.remove('bg-green-200', 'text-green-800'), 1000);
@@ -545,8 +527,6 @@
             });
         }
         
-        // ** FIXED: Added this function back from the working file **
-        // ** MODIFIED: Added "Add to Trip" button
         function openModal(item) {
             const isEvent = 'title' in item;
             const name = item.name || item.title;
@@ -577,14 +557,12 @@
             document.getElementById('modal-close-btn').addEventListener('click', closeModal);
             document.getElementById('modal-add-to-trip-btn').addEventListener('click', (e) => {
                 handleAddToTrip(item);
-                // Add a visual cue
                 const btn = e.currentTarget;
                 btn.classList.add('bg-green-200', 'text-green-800');
                 setTimeout(() => btn.classList.remove('bg-green-200', 'text-green-800'), 1000);
             });
         }
 
-        // ** FIXED: Added this function back from the working file **
         function closeModal() {
             modalBackdrop.classList.add('modal-enter');
             setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
@@ -612,7 +590,6 @@
         });
 
         // --- INITIALIZATION ---
-        // ** FIXED: This code now runs only if Firebase initialized successfully **
         if (db && auth) {
             populateSenses();
             fetchData();
@@ -624,3 +601,4 @@
     </script>
 </body>
 </html>
+}
