@@ -16,7 +16,7 @@
     <!-- Favicon (Embedded) -->
     <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" type="image/png">
 
-    <!-- ▼▼▼ 這是來自 ui.html 的新 <style> 區塊 ▼▼▼ -->
+    <!-- <style> 區塊與 v4 相同 -->
     <style>
         /* ▼▼▼ 全局樣式與動畫 ▼▼▼ */
         body { 
@@ -191,25 +191,21 @@
         }
         /* ▲▲▲ 結束按鈕動畫 ▲▲▲ */
     </style>
-    <!-- ▲▲▲ 結束 new <style> 區塊 ▲▲▲ -->
 </head>
 <body class="text-gray-800">
 
-    <!-- Header -->
-    <!-- ▼▼▼ 更新 class 以符合 ui.html 的 'header-nav-style' ▼▼▼ -->
+    <!-- Header (與 v4 相同) -->
     <header class="header-nav-style sticky top-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A99u/AgEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" alt="logo" class="h-8 w-8">
                     <div>
-                        <!-- 添加 tracking-tight 讓字距更緊湊，符合 ui.html -->
                         <h1 class="text-lg font-bold tracking-tight">nose.h.k</h1> 
                         <p class="text-xs text-gray-500">Sensory Discovery</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium flex-shrink-0">
-                    <!-- 更新按鈕樣式，使用 rounded-lg 和 帶 alpha 的 hover 背景 -->
                     <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-lg hover:bg-gray-100/80">
                         <span class="sm:hidden">登記</span>
                         <span class="hidden sm:inline">小店/活動登記</span>
@@ -222,18 +218,15 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Content Area (與 v4 相同) -->
     <div id="page-container">
         <!-- Explore Page -->
         <main id="explore-page" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- ▼▼▼ 更新 class 以符合 ui.html 的 'filters' 區域樣式 ▼▼▼ -->
             <section id="filters" class="bg-white p-6 rounded-2xl shadow-lg shadow-gray-500/5 mb-8 border border-gray-200/50">
                 <h2 class="text-xl font-bold mb-1 tracking-tight">Discover by senses —</h2>
                 <p class="text-gray-500 mb-5">Pick one or more senses and explore Events & Local Shops curated for you.</p>
-                <!-- 更新 gap-2 為 gap-3 -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div id="senses-container" class="flex flex-wrap gap-2 items-center"></div>
-                    <!-- 更新 gap-2 為 gap-3, mt-2 為 mt-0, 並為 input/select 添加 rounded-lg -->
                     <div class="flex-grow flex flex-col sm:flex-row gap-3 mt-2 sm:mt-0">
                         <select id="district-select" class="w-full sm:w-40 p-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none">
                             <option value="all">所有地區</option>
@@ -244,21 +237,16 @@
             </section>
             
             <section id="results-container">
-                <!-- ▼▼▼ 更新篩選按鈕的 HTML 結構以使用 new <style> ▼▼▼ -->
                 <div class="mb-4">
                     <div class="flex items-center gap-2 text-sm font-medium border-b border-gray-200">
-                        <!-- 移除了 "全部", "活動" 預設為 active -->
-                        <!-- 移除了 inline class, 樣式將由 .filter-btn 控制 -->
                         <button data-filter="events" class="filter-btn active py-3 px-5">活動</button>
                         <button data-filter="places" class="filter-btn py-3 px-5">本地小店</button>
                     </div>
                 </div>
 
-                <!-- ▼▼▼ 更新 class 以符合 ui.html 的 'date-scroller' 間距 ▼▼▼ -->
                 <div id="date-scroller" class="mb-6 -mt-2 pb-2 overflow-x-auto whitespace-nowrap">
                     <!-- Date buttons will be populated by JS -->
                 </div>
-                <!-- ▲▲▲ 結束日期滾動條 ▲▲▲ -->
 
                 <p id="results-count" class="text-sm text-gray-500 mb-4"></p>
                 
@@ -271,14 +259,13 @@
             </section>
         </main>
         
-        <!-- Planner Page -->
+        <!-- Planner Page (與 v4 相同) -->
         <main id="planner-page" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Content populated by JS based on login state -->
         </main>
     </div>
 
-    <!-- Bottom Tab Bar -->
-    <!-- ▼▼▼ 更新 class 以符合 ui.html 的 'bottom-nav-style' ▼▼▼ -->
+    <!-- Bottom Tab Bar (與 v4 相同) -->
     <nav class="bottom-nav-style fixed bottom-0 left-0 right-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
             <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2">
@@ -292,15 +279,14 @@
         </div>
     </nav>
 	
-    <!-- Modal -->
+    <!-- Modal (與 v4 相同) -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 hidden z-30 modal-enter">
         <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
     
     <!-- Firebase SDKs -->
-    <!-- ▼▼▼ 這是來自 index_20251024.html 的完整、可運作的 <script> 區塊 ▼▼▼ -->
-    <!-- (我只對 renderAuthUI 做了微小的樣式調整) -->
     <script type="module">
+        // 這裡的 JS 程式碼來自 v4，但包含了對 performSearch 的修正
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
@@ -315,7 +301,6 @@
             measurementId: "G-733PSHDR5L"
 		};
 		
-        // Initialize Firebase
         let app;
         let auth;
         let db;
@@ -402,7 +387,6 @@
             if (user) {
                 authContainer.innerHTML = `
                     <img src="${user.photoURL}" alt="${user.displayName}" class="w-8 h-8 rounded-full">
-                    <!-- 更新 class 為 rounded-lg 以匹配 ui.html -->
                     <button id="logout-btn" class="py-2 px-4 rounded-lg hover:bg-gray-100/80 transition-colors">登出</button>
                 `;
                 document.getElementById('logout-btn').addEventListener('click', handleSignOut);
@@ -550,9 +534,14 @@
             if (typeof dateField === 'string') {
                 const d = new Date(dateField);
                 if (!isNaN(d.getTime())) return d;
+                // 嘗試 YYYY-MM-DD
                 const parts = dateField.split('-');
-                if (parts.length === 3) return new Date(parts[0], parts[1] - 1, parts[2]);
+                if (parts.length === 3) {
+                    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+                     if (!isNaN(date.getTime())) return date;
+                }
             }
+            console.warn("Could not parse date:", dateField);
             return null;
         }
         
@@ -635,6 +624,7 @@
             dateScroller.innerHTML = buttonsHtml;
         }
 
+        // ▼▼▼ 這是已修正的 performSearch 函數 ▼▼▼
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
@@ -669,24 +659,27 @@
                         return false;
                     }
 
+                    // ▼▼▼ 這是修正後的「規則 B」 ▼▼▼
                     // 規則 B: 如果用戶選擇了特定日期 (不是 "all")
                     if (selectedDate !== 'all') {
                         const filterDate = new Date(selectedDate);
-                        filterDate.setHours(0, 0, 0, 0);
+                        filterDate.setHours(0, 0, 0, 0); // 篩選日期 (e.g., Oct 24, 00:00)
+                        
                         const eventStart = parseFirestoreDate(item.start_date);
                         
-                        if (!eventStart) return false;
-                        eventStart.setHours(0, 0, 0, 0);
-
-                        // 修正：如果沒有結束日期，則假定活動只持續一天
-                        const effectiveEnd = eventEnd ? eventEnd : eventStart;
-                        effectiveEnd.setHours(23, 59, 59, 999);
+                        // 如果沒有開始日期，隱藏它
+                        if (!eventStart) {
+                            return false; 
+                        }
+                        eventStart.setHours(0, 0, 0, 0); // 活動開始日期
                         
-                        // 檢查篩選的日期是否落在活動的 [開始] 與 [結束] 之間
-                        if (!(filterDate >= eventStart && filterDate <= effectiveEnd)) {
+                        // 核心邏輯：
+                        // 如果活動的開始日期 [早于] 用戶選擇的日期，就隱藏它。
+                        if (eventStart < filterDate) {
                             return false;
                         }
                     }
+                    // ▲▲▲ 修正邏輯結束 ▲▲▲
                 }
                 return true;
             });
@@ -706,6 +699,7 @@
 
             renderResults(filtered);
         }
+        // ▲▲▲ 函數結束 ▲▲▲
 
         function renderResults(results) {
             resultsGrid.innerHTML = '';
@@ -720,7 +714,6 @@
                 const color = stringToColor(name).substring(1);
                 const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=raleway`;
                 const card = document.createElement('div');
-                // 使用 .result-card class, new <style> 會自動應用新樣式
                 card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
                 card.style.animationDelay = `${index * 50}ms`;
                 card.innerHTML = `
@@ -743,7 +736,6 @@
                     e.stopPropagation(); 
                     handleAddToTrip(item);
                     const btn = e.currentTarget;
-                    // 使用來自 ui.html 的新動畫 class
                     btn.classList.add('active-animation');
                     btn.classList.add('bg-green-200', 'text-green-800');
                     setTimeout(() => {
@@ -781,7 +773,6 @@
                     <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
                     <div class="mt-6 flex gap-2">
-                        <!-- 更新按鈕樣式以符合 ui.html 的 'fancy-btn' -->
                         <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="fancy-btn block w-full text-center font-bold py-3 px-6 rounded-lg">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
                         <button title="新增到我的行程" id="modal-add-to-trip-btn" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
@@ -841,7 +832,7 @@
         });
 
         dateScroller.addEventListener('click', e => {
-            const target = e.target.closest('.date-btn'); // 確保點擊到的是按鈕
+            const target = e.target.closest('.date-btn'); 
             if (target) {
                 dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
                 target.classList.add('active');
@@ -860,6 +851,5 @@
              console.log("Firebase not ready, skipping initial data load and UI setup.");
         }
     </script>
-    <!-- ▲▲▲ 結束 <script> 區塊 ▲▲▲ -->
 </body>
 </html>
