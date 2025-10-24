@@ -58,6 +58,22 @@
             transition: all 0.3s ease; transform: translateX(-50%);
         }
         .filter-btn.active::after { width: 50%; }
+
+        /* ▼▼▼ 新增：行程頁 Tab 樣式 ▼▼▼ */
+        .planner-tab-btn {
+            position: relative; color: #6b7280; font-weight: 600;
+            background-color: transparent; border: 0;
+            cursor: pointer;
+        }
+        .planner-tab-btn.active { color: #111827; }
+        .planner-tab-btn::after {
+            content: ''; position: absolute; bottom: -1px; left: 50%;
+            width: 0; height: 2px; background-color: #111827;
+            transition: all 0.3s ease; transform: translateX(-50%);
+        }
+        .planner-tab-btn.active::after { width: 100%; }
+        /* ▲▲▲ 結束行程頁 Tab 樣式 ▲▲▲ */
+
         .sense-btn { border: 1px solid #e5e7eb; background-color: #ffffff; }
         .sense-btn:hover { transform: translateY(-2px); border-color: #d1d5db; }
         .sense-btn.active { background-color: #374151; color: #ffffff; border-color: #374151; }
@@ -101,7 +117,7 @@
             100% { transform: scale(1); }
         }
 
-        /* ▼▼▼ 新增：日曆 (Calendar) 樣式 ▼▼▼ */
+        /* 日曆 (Calendar) 樣式 (不變) */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -154,9 +170,8 @@
             border-radius: 50%;
             background-color: #4f46e5; /* 標記點顏色 */
         }
-        /* ▲▲▲ 結束日曆樣式 ▲▲▲ */
 
-        /* ▼▼▼ 新增：建議彈窗 (Suggestion Modal) 樣式 ▼▼▼ */
+        /* 建議彈窗 (Suggestion Modal) 樣式 (不變) */
         .suggestion-item {
             display: flex;
             align-items: center;
@@ -174,7 +189,6 @@
             height: 1.25rem;
             margin-right: 0.75rem;
         }
-        /* ▲▲▲ 結束建議彈窗樣式 ▲▲▲ */
     </style>
 </head>
 <body class="text-gray-800">
@@ -241,11 +255,10 @@
             </section>
         </main>
         
-        <!-- ▼▼▼ "我的行程" 頁面已完全重構 ▼▼▼ -->
+        <!-- "我的行程" 頁面 (不變) -->
         <main id="planner-page" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- 內容將由 JS 根據登入狀態填入 -->
         </main>
-        <!-- ▲▲▲ 結束重構 ▲▲▲ -->
 
     </div>
 
@@ -263,12 +276,12 @@
         </div>
     </nav>
     
-    <!-- 原本的詳情 Modal (z-index: 30) -->
+    <!-- 原本的詳情 Modal (z-index: 30) (不變) -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 hidden z-30 modal-enter">
         <div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div>
     </div>
 
-    <!-- ▼▼▼ 新增：建議彈窗 (z-index: 40) ▼▼▼ -->
+    <!-- 建議彈窗 (z-index: 40) -->
     <div id="suggestion-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 hidden z-40 modal-enter">
         <div id="suggestion-modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-lg bg-white rounded-2xl shadow-xl p-6 modal-content-transform">
             <div class="flex justify-between items-center mb-4">
@@ -289,20 +302,28 @@
                 <!-- JS 填入建議 -->
             </div>
             
-            <!-- 操作按鈕 -->
-            <button id="suggestion-confirm-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">
-                確認並建立行程
-            </button>
+            <!-- ▼▼▼ 操作按鈕 (已更新) ▼▼▼ -->
+            <div class="space-y-3">
+                <button id="suggestion-confirm-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">
+                    確認並建立行程
+                </button>
+                <button id="suggestion-favorite-only-btn" class="w-full bg-gray-100 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors hidden">
+                    僅加入心水小店
+                </button>
+            </div>
+            <!-- ▲▲▲ 結束操作按鈕 ▲▲▲ -->
         </div>
     </div>
-    <!-- ▲▲▲ 結束建議彈窗 ▲▲▲ -->
 
     
     <!-- Firebase SDKs -->
     <script type="module">
+        // ▼▼▼ Firebase Import 已更新 ▼▼▼
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
+        import { getFirestore, collection, onSnapshot, addDoc, doc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
+        // (注意: 移除了 updateDoc, arrayUnion, 因為我哋用緊新邏輯)
+        // (注意: 移除了 orderBy, 根據指引喺 JS 排序)
     
         // (Firebase Config 不變)
         const firebaseConfig = {
@@ -333,17 +354,17 @@
 
         let allPlaces = [];
         let allEvents = [];
-        let userTrips = []; // 呢個會儲存所有用戶嘅行程
+        let userTrips = []; // 儲存「行程」
+        let userFavoritedPlaces = []; // ▼▼▼ 新增：儲存「心水小店」 ▼▼▼
         let currentFilter = 'events'; 
         let selectedDate = 'all'; 
 
-        // ▼▼▼ 新增狀態變數 ▼▼▼
-        let currentSuggestionItem = null; // 儲存用戶點擊「心水」嘅主要項目
-        let calendarMonth = new Date(); // 儲存日曆當前顯示嘅月份
-        let selectedCalendarDate = null; // 儲存用戶喺日曆上點擊嘅日期
-        // ▲▲▲ 結束新增狀態變數 ▲▲▲
+        // 狀態變數 (不變)
+        let currentSuggestionItem = null; 
+        let calendarMonth = new Date();
+        let selectedCalendarDate = null;
 
-        // DOM Elements
+        // DOM Elements (不變)
         const authContainer = document.getElementById('auth-container');
         const sensesContainer = document.getElementById('senses-container');
         const districtSelect = document.getElementById('district-select');
@@ -360,7 +381,7 @@
         const plannerPage = document.getElementById('planner-page');
         const dateScroller = document.getElementById('date-scroller');
 
-        // ▼▼▼ 新增：建議彈窗 DOM 元素 ▼▼▼
+        // 建議彈窗 DOM 元素 (不變)
         const suggestionModalBackdrop = document.getElementById('suggestion-modal-backdrop');
         const suggestionModalContent = document.getElementById('suggestion-modal-content');
         const suggestionPrimaryItem = document.getElementById('suggestion-primary-item');
@@ -368,8 +389,9 @@
         const suggestionList = document.getElementById('suggestion-list');
         const suggestionConfirmBtn = document.getElementById('suggestion-confirm-btn');
         const suggestionModalCloseBtn = document.getElementById('suggestion-modal-close-btn');
-        // ▲▲▲ 結束新增 DOM 元素 ▲▲▲
-
+        
+        // ▼▼▼ 新增：建議彈窗嘅第二個按鈕 ▼▼▼
+        const suggestionFavoriteOnlyBtn = document.getElementById('suggestion-favorite-only-btn');
 
         // --- PAGE NAVIGATION ---
         function showPage(pageId) {
@@ -381,7 +403,7 @@
                 btn.classList.toggle('active', btn.dataset.page === pageId);
             });
             if (pageId === 'planner-page' && auth) {
-                // ▼▼▼ 修改：顯示頁面時，渲染日曆 ▼▼▼
+                // ▼▼▼ 修改：顯示頁面時，渲染「行程頁」 ▼▼▼
                 renderPlannerPage(auth.currentUser);
             }
         }
@@ -402,12 +424,15 @@
         if (auth) {
              onAuthStateChanged(auth, user => {
                 renderAuthUI(user);
-                // ▼▼▼ 修改：登入/登出時，重新渲染日曆頁面 ▼▼▼
+                // ▼▼▼ 修改：登入/登出時，重新渲染「行程頁」 ▼▼▼
                 renderPlannerPage(user); 
                 if (user && db) { 
+                    // ▼▼▼ 修改：獲取 *兩份* 資料 ▼▼▼
                     fetchUserTrips(user.uid); // 獲取行程
+                    fetchUserFavoritedPlaces(user.uid); // 獲取心水小店
                 } else {
                     userTrips = []; // 清空行程
+                    userFavoritedPlaces = []; // 清空心水小店
                     if (plannerPage.classList.contains('hidden') === false) {
                         renderPlannerPage(null); // 如果正在行程頁，顯示登入提示
                     }
@@ -431,7 +456,7 @@
 
         // --- TRIP PLANNER LOGIC ---
 
-        // ▼▼▼ "我的行程" 頁面渲染已完全重構 ▼▼▼
+        // ▼▼▼ "我的行程" 頁面渲染已完全重構 (加入 Tab) ▼▼▼
         function renderPlannerPage(user) {
             if (!user) {
                 plannerPage.innerHTML = `
@@ -446,65 +471,107 @@
                     loginBtn.addEventListener('click', handleSignIn);
                 }
             } else {
-                // 1. 渲染日曆嘅基本框架
+                // 1. 渲染 Tabs 同基本框架
                 plannerPage.innerHTML = `
-                    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
-                        <!-- 日曆標題和切換 -->
-                        <div class="flex justify-between items-center mb-4">
-                            <button id="prev-month-btn" class="p-2 rounded-lg hover:bg-gray-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 010 1.06L9.06 10l3.73 3.71a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
-                            </button>
-                            <h2 id="calendar-month-year" class="text-lg font-bold"></h2>
-                            <button id="next-month-btn" class="p-2 rounded-lg hover:bg-gray-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 010-1.06L10.94 10 7.21 6.29a.75.75 0 111.06-1.06l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0z" clip-rule="evenodd" /></svg>
-                            </button>
-                        </div>
-                        
-                        <!-- 星期名稱 -->
-                        <div class="calendar-grid mb-1">
-                            <div class="calendar-day-name">日</div>
-                            <div class="calendar-day-name">一</div>
-                            <div class="calendar-day-name">二</div>
-                            <div class="calendar-day-name">三</div>
-                            <div class="calendar-day-name">四</div>
-                            <div class="calendar-day-name">五</div>
-                            <div class="calendar-day-name">六</div>
+                    <div class="flex items-center gap-2 text-lg border-b border-gray-200 mb-6">
+                        <button id="planner-tab-trips" class="planner-tab-btn active py-3 px-5">我的行程</button>
+                        <button id="planner-tab-places" class="planner-tab-btn py-3 px-5">心水小店</button>
+                    </div>
+
+                    <!-- Tab 1: 行程日曆 (預設顯示) -->
+                    <div id="planner-trips-content">
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
+                            <!-- 日曆標題和切換 -->
+                            <div class="flex justify-between items-center mb-4">
+                                <button id="prev-month-btn" class="p-2 rounded-lg hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 010 1.06L9.06 10l3.73 3.71a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
+                                </button>
+                                <h2 id="calendar-month-year" class="text-lg font-bold"></h2>
+                                <button id="next-month-btn" class="p-2 rounded-lg hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 010-1.06L10.94 10 7.21 6.29a.75.75 0 111.06-1.06l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                            
+                            <!-- 星期名稱 -->
+                            <div class="calendar-grid mb-1">
+                                <div class="calendar-day-name">日</div>
+                                <div class="calendar-day-name">一</div>
+                                <div class="calendar-day-name">二</div>
+                                <div class="calendar-day-name">三</div>
+                                <div class="calendar-day-name">四</div>
+                                <div class="calendar-day-name">五</div>
+                                <div class="calendar-day-name">六</div>
+                            </div>
+
+                            <!-- 日曆日期格 -->
+                            <div id="calendar-days-grid" class="calendar-grid">
+                                <!-- JS 會喺呢度填入日期 -->
+                            </div>
                         </div>
 
-                        <!-- 日曆日期格 -->
-                        <div id="calendar-days-grid" class="calendar-grid">
-                            <!-- JS 會喺呢度填入日期 -->
+                        <!-- 顯示已選中日期嘅行程 -->
+                        <div id="selected-day-trips" class="mt-6">
+                            <p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>
                         </div>
                     </div>
 
-                    <!-- 顯示已選中日期嘅行程 -->
-                    <div id="selected-day-trips" class="mt-6">
-                        <p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>
+                    <!-- Tab 2: 心水小店 (預設隱藏) -->
+                    <div id="planner-places-content" class="hidden">
+                        <div id="favorited-places-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- JS 會喺呢度填入小店卡片 -->
+                        </div>
+                        <div id="no-favorited-places" class="hidden text-center py-16">
+                            <p class="text-lg text-gray-600">你尚未加入任何心水小店。</p>
+                            <p class="text-gray-500">喺「探索」頁面搵你鍾意嘅小店啦。</p>
+                        </div>
                     </div>
                 `;
                 
-                // 2. 呼叫 renderCalendar() 去填入日期
+                // 2. 呼叫 render 函數去填入內容
                 renderCalendar();
+                renderFavoritedPlaces(); // 即使隱藏都要渲染定
                 
-                // 3. 綁定月份切換按鈕事件
+                // 3. 綁定 Tab 切換按鈕事件
+                const tabTrips = document.getElementById('planner-tab-trips');
+                const tabPlaces = document.getElementById('planner-tab-places');
+                const contentTrips = document.getElementById('planner-trips-content');
+                const contentPlaces = document.getElementById('planner-places-content');
+
+                tabTrips.addEventListener('click', () => {
+                    tabTrips.classList.add('active');
+                    tabPlaces.classList.remove('active');
+                    contentTrips.classList.remove('hidden');
+                    contentPlaces.classList.add('hidden');
+                });
+                tabPlaces.addEventListener('click', () => {
+                    tabTrips.classList.remove('active');
+                    tabPlaces.classList.add('active');
+                    contentTrips.classList.add('hidden');
+                    contentPlaces.classList.remove('hidden');
+                });
+                
+                // 4. 綁定月份切換按鈕事件
                 document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
                 document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
             }
         }
 
-        // 新增：切換月份
+        // 切換月份 (不變)
         function changeMonth(delta) {
             calendarMonth.setMonth(calendarMonth.getMonth() + delta);
             renderCalendar();
         }
 
-        // 新增：渲染日曆
+        // 渲染日曆 (不變)
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             if (!grid) return; // 如果唔喺 planner-page，就退出
 
             grid.innerHTML = ''; // 清空舊日期
-            document.getElementById('selected-day-trips').innerHTML = '<p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>'; // 清空行程顯示
+            const tripsContainer = document.getElementById('selected-day-trips');
+            if (tripsContainer) {
+                tripsContainer.innerHTML = '<p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>'; // 清空行程顯示
+            }
             selectedCalendarDate = null; // 清除已選日期
 
             const today = new Date();
@@ -524,12 +591,13 @@
                 grid.innerHTML += `<div class="calendar-day empty"></div>`;
             }
 
-            // 2. 檢查邊啲日子有行程
+            // 2. 檢查邊啲日子有行程 (使用 UTC 日期字串)
             const tripDatesInMonth = new Set();
             userTrips.forEach(trip => {
                 const tripDate = parseFirestoreDate(trip.tripDate);
                 if (tripDate && tripDate.getFullYear() === year && tripDate.getMonth() === month) {
-                    tripDatesInMonth.add(tripDate.getDate());
+                    // 轉為 YYYY-MM-DD 字串嚟儲存，避免時區問題
+                    tripDatesInMonth.add(tripDate.toISOString().split('T')[0]);
                 }
             });
 
@@ -540,7 +608,8 @@
                 
                 let classes = 'calendar-day';
                 if (date.getTime() === today.getTime()) classes += ' today';
-                if (tripDatesInMonth.has(day)) classes += ' has-trip';
+                // 檢查 Set 裡面有冇呢個 YYYY-MM-DD 字串
+                if (tripDatesInMonth.has(dateString)) classes += ' has-trip';
 
                 grid.innerHTML += `<div class="${classes}" data-date="${dateString}">
                     ${day}
@@ -557,20 +626,25 @@
                     cell.classList.add('selected');
                     selectedCalendarDate = dateStr;
                     
-                    // 渲染行程
+                    // ▼▼▼ [FIX] 渲染行程 ▼▼▼
                     renderSelectedDayTrips(dateStr);
                 });
             });
         }
 
-        // 新增：渲染選中日期嘅行程
+        // ▼▼▼ [FIX] 渲染選中日期嘅行程 (已修正) ▼▼▼
         function renderSelectedDayTrips(dateString) {
             const container = document.getElementById('selected-day-trips');
-            const selectedDateObj = new Date(dateString);
-
+            
             const tripsForDay = userTrips.filter(trip => {
                 const tripDate = parseFirestoreDate(trip.tripDate);
-                return tripDate && tripDate.getTime() === selectedDateObj.getTime();
+                if (!tripDate) return false;
+                
+                // 將 tripDate 轉為 UTC 嘅 "YYYY-MM-DD" 字串
+                const tripDateString = tripDate.toISOString().split('T')[0];
+                
+                // 比較兩個 "YYYY-MM-DD" 字串
+                return tripDateString === dateString;
             });
 
             if (tripsForDay.length === 0) {
@@ -579,7 +653,7 @@
             }
             
             container.innerHTML = tripsForDay.map(trip => `
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-4">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-4 fade-in">
                     <h3 class="text-xl font-bold mb-3">${trip.name}</h3>
                     <div class="space-y-3">
                         ${trip.items.length > 0 ? trip.items.map(item => `
@@ -598,38 +672,102 @@
             `).join('');
         }
         
-        // ▼▼▼ `fetchUserTrips` 已更新 ▼▼▼
+        // 讀取「行程」
         function fetchUserTrips(userId) {
             if (!db) return;
             const q = query(collection(db, "trips"), where("userId", "==", userId));
             
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // 收到新 data 之後，重新渲染日曆
-                renderCalendar(); 
+                // 收到新 data 之後，重新渲染日曆 (如果日曆存在)
+                if (document.getElementById('calendar-days-grid')) {
+                    renderCalendar(); 
+                }
             }, (error) => {
                 console.error("Error fetching user trips: ", error);
             });
         }
+        
+        // ▼▼▼ 新增：讀取「心水小店」 ▼▼▼
+        function fetchUserFavoritedPlaces(userId) {
+            if (!db) return;
+            const q = query(collection(db, "favoritedPlaces"), where("userId", "==", userId));
+            
+            onSnapshot(q, (snapshot) => {
+                userFavoritedPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // 喺 JS 排序 (避免 Firestore 索引問題)
+                userFavoritedPlaces.sort((a, b) => {
+                    const dateA = parseFirestoreDate(a.createdAt) || 0;
+                    const dateB = parseFirestoreDate(b.createdAt) || 0;
+                    return dateB - dateA; // 最新喺最前
+                });
 
-        // ▼▼▼ `handleAddToTrip` (加入心水) 已重寫 ▼▼▼
+                // 收到新 data 之後，重新渲染心水小店列表
+                if (document.getElementById('favorited-places-grid')) {
+                    renderFavoritedPlaces();
+                }
+            }, (error) => {
+                console.error("Error fetching user favorited places: ", error);
+            });
+        }
+        
+        // ▼▼▼ 新增：渲染「心水小店」列表 ▼▼▼
+        function renderFavoritedPlaces() {
+            const grid = document.getElementById('favorited-places-grid');
+            const noResultsEl = document.getElementById('no-favorited-places');
+            if (!grid || !noResultsEl) return; // 如果唔喺 planner-page，就退出
+
+            if (userFavoritedPlaces.length === 0) {
+                grid.innerHTML = '';
+                noResultsEl.classList.remove('hidden');
+                return;
+            }
+
+            noResultsEl.classList.add('hidden');
+            grid.innerHTML = ''; // 清空
+
+            userFavoritedPlaces.forEach((fav, index) => {
+                const item = fav.placeData; // 數據儲存喺 placeData 裡面
+                if (!item) return;
+
+                const name = item.name;
+                const color = stringToColor(name).substring(1);
+                const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=raleway`;
+
+                const card = document.createElement('div');
+                card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
+                card.style.animationDelay = `${index * 50}ms`;
+                card.innerHTML = `
+                    <div class="aspect-video bg-gray-100"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <p class="text-xs font-semibold text-gray-500">${item.category || '地點'}</p>
+                        <h3 class="font-bold text-lg mt-1 tracking-tight">${name}</h3>
+                        <p class="text-sm text-gray-500">${item.address || item.district}</p>
+                        <div class="mt-auto pt-4">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="view-details-btn block w-full text-center bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">
+                                查看小店
+                            </a>
+                        </div>
+                    </div>
+                `;
+                // (注意：心水小店卡片唔需要「加入心水」按鈕)
+                grid.appendChild(card);
+            });
+        }
+
+        // `handleAddToTrip` (加入心水) (不變)
         function handleAddToTrip(item) {
             const user = auth?.currentUser;
             if (!user) {
-                // 如果未登入，顯示提示 (或者可以彈出登入視窗)
                 alert("請先登入，才能規劃行程。"); 
-                handleSignIn(); // 彈出登入
+                handleSignIn(); 
                 return;
             }
-            
-            // 1. 儲存當前項目
             currentSuggestionItem = item;
-            
-            // 2. 呼叫建議彈窗
             openSuggestionModal(item);
         }
         
-        // 新增：開啟建議彈窗
+        // ▼▼▼ `openSuggestionModal` 已更新 (加入新按鈕邏輯) ▼▼▼
         function openSuggestionModal(item) {
             const isEvent = 'title' in item;
             const district = item.district;
@@ -656,7 +794,6 @@
                 );
             } else {
                 suggestionTitle.textContent = '喺「' + district + '」附近嘅活動建議：';
-                // 篩選同區，而且未結束嘅活動
                 const today = new Date(); today.setHours(0,0,0,0);
                 suggestions = allEvents.filter(event => {
                     const eventEnd = parseFirestoreDate(event.end_date);
@@ -680,19 +817,33 @@
             } else {
                 suggestionList.innerHTML = `<p class="text-sm text-gray-500 text-center p-4">喺呢個地區暫時冇其他建議。</p>`;
             }
+
+            // 4. ▼▼▼ 更新按鈕狀態 ▼▼▼
+            if (isEvent) {
+                // 如果係活動，只顯示「建立行程」按鈕
+                suggestionConfirmBtn.textContent = '確認並建立行程';
+                suggestionConfirmBtn.classList.remove('hidden');
+                suggestionFavoriteOnlyBtn.classList.add('hidden');
+            } else {
+                // 如果係小店，顯示 *兩個* 按鈕
+                suggestionConfirmBtn.textContent = '建立行程並加入';
+                suggestionFavoriteOnlyBtn.textContent = '僅加入心水小店';
+                suggestionConfirmBtn.classList.remove('hidden');
+                suggestionFavoriteOnlyBtn.classList.remove('hidden');
+            }
             
-            // 4. 顯示彈窗 (z-index 40)
+            // 5. 顯示彈窗 (z-index 40)
             suggestionModalBackdrop.classList.remove('hidden');
             setTimeout(() => suggestionModalBackdrop.classList.remove('modal-enter'), 10);
         }
 
-        // 新增：關閉建議彈窗
+        // 關閉建議彈窗 (不變)
         function closeSuggestionModal() {
             suggestionModalBackdrop.classList.add('modal-enter');
             setTimeout(() => suggestionModalBackdrop.classList.add('hidden'), 300);
         }
         
-        // 新增：處理建議彈窗嘅確認按鈕
+        // 處理建議彈窗嘅「確認建立行程」按鈕 (不變)
         async function handleSuggestionConfirm() {
             const user = auth?.currentUser;
             if (!user || !currentSuggestionItem) return;
@@ -729,7 +880,7 @@
             }
             tripDate.setHours(0,0,0,0); // 確保係當日零時
 
-            // 3. 儲存到 Firebase
+            // 3. 儲存到 Firebase 嘅 "trips" collection
             try {
                 await addDoc(collection(db, "trips"), {
                     userId: user.uid,
@@ -752,8 +903,41 @@
                 alert("建立行程時發生錯誤，請稍後再試。");
             }
         }
+
+        // ▼▼▼ 新增：處理「僅加入心水小店」按鈕 ▼▼▼
+        async function handleFavoritePlaceOnly() {
+            const user = auth?.currentUser;
+            if (!user || !currentSuggestionItem || 'title' in currentSuggestionItem) {
+                // 安全檢查，確保係小店
+                return;
+            }
+
+            try {
+                // 儲存到 Firebase 嘅 "favoritedPlaces" collection
+                await addDoc(collection(db, "favoritedPlaces"), {
+                    userId: user.uid,
+                    placeId: currentSuggestionItem.id,
+                    createdAt: Timestamp.now(),
+                    placeData: formatItemForTrip(currentSuggestionItem) // 儲存小店嘅基本資料
+                });
+                
+                console.log("New place favorited!");
+                closeSuggestionModal(); // 關閉建議彈窗
+                closeModal(); // 關閉詳情彈窗
+                
+                alert("已成功加入心水小店！");
+                
+                // (可選) 唔跳轉，等用戶繼續瀏覽
+                // showPage('planner-page'); 
+                // document.getElementById('planner-tab-places')?.click(); // 自動切換到心水小店 Tab
+
+            } catch (e) {
+                console.error("Error favoriting place: ", e);
+                alert("加入心水時發生錯誤，請稍後再試。");
+            }
+        }
         
-        // 新增：一個輔助函數，將完整 item 物件格式化為儲存用嘅 stub
+        // 輔助函數：格式化 item (不變)
         function formatItemForTrip(item) {
             return {
                 id: item.id || null,
@@ -765,21 +949,22 @@
             };
         }
         
-        // (舊嘅 'addItemToTrip' 同 'createNewTrip' 已經被 'handleSuggestionConfirm' 取代)
-        
         // --- DATA FETCHING & RENDERING ---
         
-        // 輔助函數：安全地解析 Firestore 日期 (已更新)
+        // 輔助函數：安全地解析 Firestore 日期 (不變)
         function parseFirestoreDate(dateField) {
             if (!dateField) return null;
             if (typeof dateField.toDate === 'function') return dateField.toDate();
             if (dateField instanceof Date) return dateField;
             if (typeof dateField === 'string') {
+                // 嘗試 ISO 8601
                 const d = new Date(dateField);
                 if (!isNaN(d.getTime())) return d;
+                // 嘗試 YYYY-MM-DD
                 const parts = dateField.split('-');
                 if (parts.length === 3) {
-                    const date = new Date(parts[0], parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    // 注意：月份係 0-indexed
+                    const date = new Date(Date.UTC(parts[0], parseInt(parts[1]) - 1, parseInt(parts[2])));
                      if (!isNaN(date.getTime())) return date;
                 }
             }
@@ -787,6 +972,7 @@
             return null;
         }
         
+        // 讀取 Events / Places (不變)
         function fetchData() {
             if (!db) {
                 console.error("Firestore DB not initialized.");
@@ -818,6 +1004,7 @@
             }
         }
         
+        // (stringToColor, populateSenses, populateDistricts, populateDateScroller 函數不變)
         function stringToColor(str) {
             if (!str) return '#cccccc';
             let hash = 0;
@@ -829,7 +1016,6 @@
             }
             return color;
         }
-        
         function populateSenses() {
             sensesContainer.innerHTML = SENSES.map((sense, index) => 
                 `<button data-sense="${sense}" class="sense-btn border px-3 py-1.5 rounded-lg text-sm font-medium">${SENSES_ZH[index]}</button>`
@@ -841,14 +1027,12 @@
                 }
             });
         }
-
         function populateDistricts() {
             const currentSelection = districtSelect.value;
             const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
             districtSelect.innerHTML = `<option value="all">所有地區</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
             districtSelect.value = currentSelection;
         }
-
         function populateDateScroller() {
             let buttonsHtml = `<button class="date-btn active" data-date="all">所有日子</button>`;
             const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
@@ -866,7 +1050,7 @@
             dateScroller.innerHTML = buttonsHtml;
         }
 
-        // `performSearch` (包含上次嘅日期 bug 修正)
+        // `performSearch` (日期邏輯已修正，不變)
         function performSearch() {
             const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
             const selectedDistrict = districtSelect.value;
@@ -898,24 +1082,30 @@
                     }
 
                     if (selectedDate !== 'all') {
-                        const filterDate = new Date(selectedDate);
-                        filterDate.setHours(0, 0, 0, 0); 
+                        // 比較 YYYY-MM-DD 字串
                         const eventStart = parseFirestoreDate(item.start_date);
+                        if (!eventStart) return false;
+                        const eventStartDateString = eventStart.toISOString().split('T')[0];
+
+                        // 注意：呢度嘅邏輯係「只顯示今日或之後」，同埋「符合所選日期」
+                        // 邏輯應該係：如果揀咗日期，開始日期 *必須* 同所選日期一樣
+                        const eventStartDate = parseFirestoreDate(item.start_date);
+                        if (!eventStartDate) return false;
+                        eventStartDate.setHours(0,0,0,0);
                         
-                        if (!eventStart) {
-                            return false; 
-                        }
-                        eventStart.setHours(0, 0, 0, 0); 
+                        const filterDate = new Date(selectedDate); // e.g., "2025-10-25"
+                        filterDate.setHours(0,0,0,0);
                         
-                        if (eventStart < filterDate) {
-                            return false;
+                        // 篩選：開始日期必須等於所選日期
+                        if (eventStartDate.getTime() !== filterDate.getTime()) {
+                             return false;
                         }
                     }
                 }
                 return true;
             });
 
-            // 排序
+            // 排序 (不變)
             filtered.sort((a, b) => {
                 if (isEventMode) {
                     const dateA = parseFirestoreDate(a.start_date)?.getTime() || Infinity;
@@ -931,6 +1121,7 @@
             renderResults(filtered);
         }
 
+        // (renderResults 函數不變, openModal 函數不變, closeModal 函數不變)
         function renderResults(results) {
             resultsGrid.innerHTML = '';
             resultsCount.textContent = `顯示 ${results.length} 個結果`;
@@ -955,7 +1146,6 @@
                         <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                         <div class="mt-auto pt-4 flex gap-2">
                             <button class="view-details-btn w-full bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">${isEvent ? '查看活動' : '查看小店'}</button>
-                            <!-- ▼▼▼ "加入心水" 按鈕已更新 ▼▼▼ -->
                             <button title="加入心水行程" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-2 rounded-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                             </button>
@@ -963,16 +1153,13 @@
                     </div>
                 `;
                 card.querySelector('.view-details-btn').addEventListener('click', () => openModal(item));
-                
-                // ▼▼▼ "加入心水" 監聽器已更新 ▼▼▼
                 card.querySelector('.add-to-trip-btn').addEventListener('click', (e) => {
                     e.stopPropagation(); 
-                    handleAddToTrip(item); // 呼叫新嘅 handleAddToTrip
+                    handleAddToTrip(item);
                 });
                 resultsGrid.appendChild(card);
             });
         }
-        
         function openModal(item) {
             const isEvent = 'title' in item;
             const name = item.name || item.title;
@@ -999,8 +1186,7 @@
                     <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
                     <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
                     <div class="mt-6 flex gap-2">
-                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="fancy-btn block w-full text-center font-bold py-3 px-6 rounded-lg">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
-                        <!-- ▼▼▼ "加入心水" 按鈕已更新 ▼▼▼ -->
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="w-full bg-gray-800 text-white text-center font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
                         <button title="加入心水行程" id="modal-add-to-trip-btn" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
                         </button>
@@ -1010,19 +1196,16 @@
             modalBackdrop.classList.remove('hidden');
             setTimeout(() => modalBackdrop.classList.remove('modal-enter'), 10);
             document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-            
-            // ▼▼▼ "加入心水" 監聽器已更新 ▼▼▼
             document.getElementById('modal-add-to-trip-btn').addEventListener('click', (e) => {
-                handleAddToTrip(item); // 呼叫新嘅 handleAddToTrip
+                handleAddToTrip(item); 
             });
         }
-
         function closeModal() {
             modalBackdrop.classList.add('modal-enter');
             setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
         }
 
-        // --- EVENT LISTENERS ---
+        // --- EVENT LISTENERS (基本不變) ---
         districtSelect.addEventListener('change', performSearch);
         searchInput.addEventListener('input', performSearch);
         
@@ -1034,7 +1217,9 @@
                 dateScroller.classList.toggle('hidden', currentFilter !== 'events');
                 selectedDate = 'all';
                 dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-                dateScroller.querySelector('.date-btn[data-date="all"]').classList.add('active');
+                if (dateScroller.querySelector('.date-btn[data-date="all"]')) {
+                     dateScroller.querySelector('.date-btn[data-date="all"]').classList.add('active');
+                }
                 performSearch();
             });
         });
@@ -1057,11 +1242,13 @@
             }
         });
         
-        // ▼▼▼ 新增：建議彈窗嘅監聽器 ▼▼▼
+        // ▼▼▼ 更新：建議彈窗嘅監聽器 (已加入新按鈕) ▼▼▼
         suggestionModalCloseBtn.addEventListener('click', closeSuggestionModal);
         suggestionModalBackdrop.addEventListener('click', e => { if (e.target === suggestionModalBackdrop) closeSuggestionModal(); });
         suggestionConfirmBtn.addEventListener('click', handleSuggestionConfirm);
-        // ▲▲▲ 結束新增監聽器 ▲▲▲
+As-is:
+        suggestionFavoriteOnlyBtn.addEventListener('click', handleFavoritePlaceOnly); // <-- 新增
+        // ▲▲▲ 結束更新監聽器 ▲▲▲
 
         // --- INITIALIZATION ---
         if (db && auth) {
