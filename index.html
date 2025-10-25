@@ -6,12 +6,14 @@
     <title>nose.h.k | sensory discovery</title>
     
     <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <!-- ▼▼▼ [FIX] 移除 Markdown 連結語法 ▼▼▼ -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- ▼▼▼ [FIX] 移除 Markdown 連結語法 ▼▼▼ -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon (Embedded) -->
     <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAOVBMVEX///8AAADa2trf39/g4ODd3d3b29vY2NjX19e/v7/y8vLz8/Pj4+Ph4eHu7u729vb5+fna2tqUlJSXl5eOj4qWIAU/AAABPUlEQVR4nO3PMRKAIBADAUH8/6ELCqQDIqF3j9W2rdt2v38A9DlfAQEJSEACEnBAAhKQAAScgAQkIAEJSEACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAQhIAAJyQAISEAACEpCAAgcQkIAEJSEACEvB/4gA9QyXf97GlQAAAAABJRU5ErkJggg==" type="image/png">
@@ -23,7 +25,7 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- Header (不變) -->
+    <!-- Header -->
     <header class="header-nav-style sticky top-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -32,7 +34,8 @@
                     <div><h1 class="text-lg font-bold tracking-tight">nose.h.k</h1> <p class="text-xs text-gray-500">Sensory Discovery</p></div>
                 </div>
                 <div class="flex items-center gap-2 text-sm font-medium flex-shrink-0">
-                    <a href="[https://forms.gle/Fz9KQkVYynCBQgfm7](https://forms.gle/Fz9KQkVYynCBQgfm7)" target="_blank" class="py-2 px-4 rounded-lg hover:bg-gray-100/80"><span class="sm:hidden">登記</span><span class="hidden sm:inline">小店/活動登記</span></a>
+                    <!-- ▼▼▼ [FIX] 移除 Markdown 連結語法 ▼▼▼ -->
+                    <a href="https://forms.gle/Fz9KQkVYynCBQgfm7" target="_blank" class="py-2 px-4 rounded-lg hover:bg-gray-100/80"><span class="sm:hidden">登記</span><span class="hidden sm:inline">小店/活動登記</span></a>
                     <div id="auth-container" class="flex items-center gap-2 text-sm font-medium"></div>
                 </div>
             </div>
@@ -73,25 +76,27 @@
         <main id="planner-page" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 py-8"></main>
     </div>
 
-    <!-- Bottom Tab Bar (不變) -->
+    <!-- Bottom Tab Bar -->
     <nav class="bottom-nav-style fixed bottom-0 left-0 right-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-around">
-            <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2"><svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg><span class="text-xs font-medium">探索</span></button>
-            <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2"><svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg><span class="text-xs font-medium">我的行程</span></button>
+            <!-- ▼▼▼ [FIX] 移除 Markdown 連結語法 ▼▼▼ -->
+            <button data-page="explore-page" class="tab-btn active flex-1 flex flex-col items-center justify-center py-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9.69 2.522a.75.75 0 01.62 0l6.25 2.5a.75.75 0 01.44 1.012l-2.5 6.25a.75.75 0 01-1.012.44l-6.25-2.5a.75.75 0 01-.44-1.012l2.5-6.25a.75.75 0 011.012-.44zM8.5 9.75a.75.75 0 00-1.06-1.06l-1.5 1.5a.75.75 0 001.06 1.06l1.5-1.5zm2.56-1.06a.75.75 0 011.06 0l1.5 1.5a.75.75 0 01-1.06 1.06l-1.5-1.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg><span class="text-xs font-medium">探索</span></button>
+            <button data-page="planner-page" class="tab-btn flex-1 flex flex-col items-center justify-center py-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M5.5 16.5a1.5 1.5 0 01-1.5-1.5V5A1.5 1.5 0 015.5 3.5h9A1.5 1.5 0 0116 5v10a1.5 1.5 0 01-1.5 1.5h-9zM7 6a1 1 0 00-1 1v1a1 1 0 001 1h6a1 1 0 001-1V7a1 1 0 00-1-1H7z" /></svg><span class="text-xs font-medium">我的行程</span></button>
         </div>
     </nav>
 	
     <!-- 原本的詳情 Modal (z-index: 30) (不變) -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 hidden z-30 modal-enter"><div id="modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 modal-content-transform"></div></div>
 
-    <!-- 建議彈窗 (z-index: 40) (HTML 結構不變) -->
-    <div id="suggestion-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 hidden z-40 modal-enter"><div id="suggestion-modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-lg bg-white rounded-2xl shadow-xl p-6 modal-content-transform"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">建立你的行程</h3><button id="suggestion-modal-close-btn" class="text-gray-400 hover:text-gray-600"><svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg></button></div><div id="suggestion-primary-item" class="mb-4"></div><h4 id="suggestion-title" class="text-md font-semibold text-gray-700 mb-2"></h4><div id="suggestion-list" class="max-h-48 overflow-y-auto space-y-2 mb-6 pr-2"></div><button id="suggestion-confirm-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">確認並建立行程</button></div></div>
+    <!-- 建議彈窗 (z-index: 40) -->
+    <div id="suggestion-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-70 hidden z-40 modal-enter"><div id="suggestion-modal-content" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-lg bg-white rounded-2xl shadow-xl p-6 modal-content-transform"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">建立你的行程</h3><button id="suggestion-modal-close-btn" class="text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg></button></div><div id="suggestion-primary-item" class="mb-4"></div><h4 id="suggestion-title" class="text-md font-semibold text-gray-700 mb-2"></h4><div id="suggestion-list" class="max-h-48 overflow-y-auto space-y-2 mb-6 pr-2"></div><button id="suggestion-confirm-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">確認並建立行程</button></div></div>
     
     <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js)";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js)";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "[https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js](https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js)"; 
+        // ▼▼▼ [FIX] 移除 Markdown 連結語法 ▼▼▼
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, arrayUnion, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
 	
         // Firebase Config (不變)
         const firebaseConfig = { apiKey: "AIzaSyBHw_5ApaAa6N18ym4QnzJwmoxWRP3M4Ac", authDomain: "nostartnoendhk-11a6a.firebaseapp.com", projectId: "nostartnoendhk-11a6a", storageBucket: "nostartnoendhk-11a6a.appspot.com", messagingSenderId: "1394470229", appId: "1:1394470229:web:e20dd66a469aaaf429d3dc", measurementId: "G-733PSHDR5L" };
@@ -130,65 +135,11 @@
         function changeMonth(delta) { /* ... (與上一版本相同) ... */ 
             calendarMonth.setMonth(calendarMonth.getMonth() + delta); renderCalendar(); renderWishlistPlaces(); 
         }
-        
-        // ▼▼▼ `renderCalendar` 已更新，使用 YYYY-MM-DD 字串比較 ▼▼▼
-        function renderCalendar() { 
-            const grid=document.getElementById('calendar-days-grid');if(!grid)return;
-            grid.innerHTML=''; const selectedTripsContainer=document.getElementById('selected-day-trips-list'); if(selectedTripsContainer)selectedTripsContainer.innerHTML='<p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>';selectedCalendarDate=null; 
-            const today=new Date();today.setHours(0,0,0,0);const month=calendarMonth.getMonth(),year=calendarMonth.getFullYear();
-            document.getElementById('calendar-month-year').textContent=`${year}年 ${month+1}月`;
-            const firstDayOfMonth=new Date(year,month,1),daysInMonth=new Date(year,month+1,0).getDate(),startDayOfWeek=firstDayOfMonth.getDay(); 
-            for(let i=0;i<startDayOfWeek;i++){grid.innerHTML+=`<div class="calendar-day empty"></div>`}
-            
-            // 檢查邊啲日子有行程 (使用 YYYY-MM-DD)
-            const tripDatesInMonthYMD = new Set();
-            userTrips.forEach(trip => { 
-                const tripDate = parseFirestoreDate(trip.tripDate); 
-                if (tripDate && tripDate.getFullYear() === year && tripDate.getMonth() === month) {
-                     tripDatesInMonthYMD.add(formatDateToYMD(tripDate)); // Store YYYY-MM-DD
-                } 
-            });
-
-            for(let day=1;day<=daysInMonth;day++){ 
-                const date=new Date(year,month,day); 
-                const dateString = formatDateToYMD(date); // Get YYYY-MM-DD
-                let classes='calendar-day'; 
-                if(date.getTime()===today.getTime()) classes+=' today'; 
-                // 比較 YYYY-MM-DD 字串
-                if(tripDatesInMonthYMD.has(dateString)) classes+=' has-trip'; 
-                grid.innerHTML+=`<div class="${classes}" data-date="${dateString}">${day}</div>`
-            }
-            grid.querySelectorAll('.calendar-day:not(.empty)').forEach(cell=>{cell.addEventListener('click',()=>{const dateStr=cell.dataset.date;grid.querySelectorAll('.calendar-day').forEach(c=>c.classList.remove('selected'));cell.classList.add('selected');selectedCalendarDate=dateStr;renderSelectedDayTrips(dateStr)})})}
-        // ▲▲▲ `renderCalendar` 結束 ▲▲▲
-
-        // ▼▼▼ `renderSelectedDayTrips` 已更新，使用 YYYY-MM-DD 字串比較 ▼▼▼
-        function renderSelectedDayTrips(dateString) { // dateString is "YYYY-MM-DD"
-            const container = document.getElementById('selected-day-trips-list'); 
-            if (!container) return; 
-
-            const tripsForDay = userTrips.filter(trip => {
-                const tripDate = parseFirestoreDate(trip.tripDate); // Get local Date object
-                if (!tripDate) return false;
-                const tripDateString = formatDateToYMD(tripDate); // Convert to "YYYY-MM-DD"
-                return tripDateString === dateString; // Compare strings
-            });
-
-            if (tripsForDay.length === 0) { container.innerHTML = `<p class="text-gray-500 text-center">呢一日冇行程。</p>`; return; }
-            
-            container.innerHTML = tripsForDay.map(trip => `
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-4 fade-in">
-                    <h3 class="text-xl font-bold mb-3">${trip.name}</h3>
-                    <div class="space-y-3">
-                        ${trip.items.map(item => `
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div><p class="font-semibold">${item.name || item.title}</p><p class="text-sm text-gray-500">${item.category}</p></div>
-                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-indigo-600 hover:text-indigo-800">查看</a>
-                            </div>`).join('')}
-                    </div>
-                </div>`).join('');
+        function renderCalendar() { /* ... (與上一版本相同, 已包含 YMD 修正) ... */ 
+            const grid=document.getElementById('calendar-days-grid');if(!grid)return;grid.innerHTML=''; const selectedTripsContainer=document.getElementById('selected-day-trips-list'); if(selectedTripsContainer)selectedTripsContainer.innerHTML='<p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>';selectedCalendarDate=null; const today=new Date();today.setHours(0,0,0,0);const month=calendarMonth.getMonth(),year=calendarMonth.getFullYear();document.getElementById('calendar-month-year').textContent=`${year}年 ${month+1}月`;const firstDayOfMonth=new Date(year,month,1),daysInMonth=new Date(year,month+1,0).getDate(),startDayOfWeek=firstDayOfMonth.getDay(); for(let i=0;i<startDayOfWeek;i++){grid.innerHTML+=`<div class="calendar-day empty"></div>`} const tripDatesInMonthYMD=new Set();userTrips.forEach(trip=>{const tripDate=parseFirestoreDate(trip.tripDate);if(tripDate&&tripDate.getFullYear()===year&&tripDate.getMonth()===month){tripDatesInMonthYMD.add(formatDateToYMD(tripDate))}});for(let day=1;day<=daysInMonth;day++){const date=new Date(year,month,day);const dateString=formatDateToYMD(date);let classes='calendar-day';if(date.getTime()===today.getTime())classes+=' today';if(tripDatesInMonthYMD.has(dateString))classes+=' has-trip';grid.innerHTML+=`<div class="${classes}" data-date="${dateString}">${day}</div>`}grid.querySelectorAll('.calendar-day:not(.empty)').forEach(cell=>{cell.addEventListener('click',()=>{const dateStr=cell.dataset.date;grid.querySelectorAll('.calendar-day').forEach(c=>c.classList.remove('selected'));cell.classList.add('selected');selectedCalendarDate=dateStr;renderSelectedDayTrips(dateStr)})})}
+        function renderSelectedDayTrips(dateString) { /* ... (與上一版本相同, 已包含 YMD 修正) ... */ 
+            const container = document.getElementById('selected-day-trips-list'); if (!container) return; const tripsForDay = userTrips.filter(trip => { const tripDate = parseFirestoreDate(trip.tripDate); if (!tripDate) return false; const tripDateString = formatDateToYMD(tripDate); return tripDateString === dateString; }); if (tripsForDay.length === 0) { container.innerHTML = `<p class="text-gray-500 text-center">呢一日冇行程。</p>`; return; } container.innerHTML = tripsForDay.map(trip => `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-4 fade-in"><h3 class="text-xl font-bold mb-3">${trip.name}</h3><div class="space-y-3">${trip.items.map(item => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><div><p class="font-semibold">${item.name || item.title}</p><p class="text-sm text-gray-500">${item.category}</p></div><a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-indigo-600 hover:text-indigo-800">查看</a></div>`).join('')}</div></div>`).join('');
         }
-        // ▲▲▲ `renderSelectedDayTrips` 結束 ▲▲▲
-        
         function renderWishlistPlaces() { /* ... (與上一版本相同) ... */ 
             const container=document.getElementById('wishlist-places-list');if(!container)return;const wishlistTrips=userTrips.filter(trip=>!trip.tripDate);if(wishlistTrips.length===0){container.innerHTML=`<p class="text-gray-500 text-center">暫時冇未定日期嘅心水地點。</p>`;return}container.innerHTML=wishlistTrips.map(trip=>(`<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 fade-in"><h4 class="font-semibold mb-2">${trip.name}</h4><div class="space-y-2">${trip.items.map(item=>`<div class="flex items-center justify-between p-2 bg-gray-50 rounded"><div><p class="text-sm font-medium">${item.name||item.title}</p><p class="text-xs text-gray-500">${item.category}</p></div><a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-600 hover:text-indigo-800">查看</a></div>`).join('')}</div></div>`)).join('')
         }
