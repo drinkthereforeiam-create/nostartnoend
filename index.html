@@ -304,12 +304,15 @@
                 <!-- JS 填入建議 -->
             </div>
             
-            <!-- ▼▼▼ 操作按鈕 (已更新 - 只有一個按鈕) ▼▼▼ -->
+            <!-- ▼▼▼ 操作按鈕 (已更新) ▼▼▼ -->
             <div class="space-y-3">
                 <button id="suggestion-confirm-btn" class="w-full bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">
-                    <!-- JS 會更新文字 -->
+                    確認並建立行程
                 </button>
-                <!-- 移除第二個按鈕 -->
+                <!-- 新增按鈕，預設隱藏 -->
+                <button id="suggestion-favorite-only-btn" class="w-full bg-gray-100 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors hidden">
+                    僅加入心水小店
+                </button>
             </div>
             <!-- ▲▲▲ 結束操作按鈕 ▲▲▲ -->
         </div>
@@ -318,7 +321,7 @@
     
     <!-- Firebase SDKs -->
     <script type="module">
-        // Firebase Import (不變)
+        // ▼▼▼ Firebase Import 已更新 (移除唔需要嘅 updateDoc, arrayUnion) ▼▼▼
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; 
@@ -342,7 +345,8 @@
             auth = getAuth(app);
             db = getFirestore(app);
             console.log("Firebase initialized successfully.");
-        } catch (e) {
+        } catch (e)
+ {
             console.error("Firebase initialization error:", e);
             document.body.innerHTML = `<p style="color: red; padding: 20px;">Error initializing Firebase. Please check the console and your config.</p>`;
         }
@@ -353,7 +357,7 @@
         let allPlaces = [];
         let allEvents = [];
         let userTrips = []; // 儲存「行程」
-        let userFavoritedPlaces = []; // 儲存「心水小店」
+        let userFavoritedPlaces = []; // ▼▼▼ 新增：儲存「心水小店」 ▼▼▼
         let currentFilter = 'events'; 
         let selectedDate = 'all'; 
 
@@ -379,7 +383,7 @@
         const plannerPage = document.getElementById('planner-page');
         const dateScroller = document.getElementById('date-scroller');
 
-        // 建議彈窗 DOM 元素 (移除第二個按鈕)
+        // 建議彈窗 DOM 元素 (不變)
         const suggestionModalBackdrop = document.getElementById('suggestion-modal-backdrop');
         const suggestionModalContent = document.getElementById('suggestion-modal-content');
         const suggestionPrimaryItem = document.getElementById('suggestion-primary-item');
@@ -387,10 +391,12 @@
         const suggestionList = document.getElementById('suggestion-list');
         const suggestionConfirmBtn = document.getElementById('suggestion-confirm-btn');
         const suggestionModalCloseBtn = document.getElementById('suggestion-modal-close-btn');
-        // 移除: const suggestionFavoriteOnlyBtn = ...
+        
+        // ▼▼▼ 新增：建議彈窗嘅第二個按鈕 ▼▼▼
+        const suggestionFavoriteOnlyBtn = document.getElementById('suggestion-favorite-only-btn');
 
 
-        // --- PAGE NAVIGATION --- (不變)
+        // --- PAGE NAVIGATION ---
         function showPage(pageId) {
             explorePage.classList.add('hidden');
             plannerPage.classList.add('hidden');
@@ -400,11 +406,12 @@
                 btn.classList.toggle('active', btn.dataset.page === pageId);
             });
             if (pageId === 'planner-page' && auth) {
+                // ▼▼▼ 修改：顯示頁面時，渲染「行程頁」 ▼▼▼
                 renderPlannerPage(auth.currentUser);
             }
         }
 
-        // --- AUTHENTICATION --- (不變)
+        // --- AUTHENTICATION ---
         const provider = new GoogleAuthProvider();
 
         function handleSignIn() {
@@ -420,15 +427,17 @@
         if (auth) {
              onAuthStateChanged(auth, user => {
                 renderAuthUI(user);
+                // ▼▼▼ 修改：登入/登出時，重新渲染「行程頁」 ▼▼▼
                 renderPlannerPage(user); 
                 if (user && db) { 
-                    fetchUserTrips(user.uid); 
-                    fetchUserFavoritedPlaces(user.uid); 
+                    // ▼▼▼ 修改：獲取 *兩份* 資料 ▼▼▼
+                    fetchUserTrips(user.uid); // 獲取行程
+                    fetchUserFavoritedPlaces(user.uid); // 獲取心水小店
                 } else {
-                    userTrips = []; 
-                    userFavoritedPlaces = []; 
+                    userTrips = []; // 清空行程
+                    userFavoritedPlaces = []; // 清空心水小店
                     if (plannerPage.classList.contains('hidden') === false) {
-                        renderPlannerPage(null); 
+                        renderPlannerPage(null); // 如果正在行程頁，顯示登入提示
                     }
                 }
              });
@@ -450,7 +459,7 @@
 
         // --- TRIP PLANNER LOGIC ---
 
-        // "我的行程" 頁面渲染 (不變)
+        // ▼▼▼ "我的行程" 頁面渲染已完全重構 (加入 Tab) ▼▼▼
         function renderPlannerPage(user) {
             if (!user) {
                 plannerPage.innerHTML = `
@@ -465,13 +474,18 @@
                     loginBtn.addEventListener('click', handleSignIn);
                 }
             } else {
+                // 1. 渲染 Tabs 同基本框架
                 plannerPage.innerHTML = `
+                    <!-- Tab 按鈕 -->
                     <div class="flex items-center gap-2 text-lg border-b border-gray-200 mb-6">
                         <button id="planner-tab-trips" class="planner-tab-btn active">我的行程</button>
                         <button id="planner-tab-places" class="planner-tab-btn">心水小店</button>
                     </div>
+
+                    <!-- Tab 1: 行程日曆 (預設顯示) -->
                     <div id="planner-trips-content" class="fade-in">
                         <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg shadow-gray-500/5 border border-gray-200/50">
+                            <!-- 日曆標題和切換 -->
                             <div class="flex justify-between items-center mb-4">
                                 <button id="prev-month-btn" class="p-2 rounded-lg hover:bg-gray-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 010 1.06L9.06 10l3.73 3.71a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clip-rule="evenodd" /></svg>
@@ -481,26 +495,47 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 010-1.06L10.94 10 7.21 6.29a.75.75 0 111.06-1.06l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0z" clip-rule="evenodd" /></svg>
                                 </button>
                             </div>
+                            
+                            <!-- 星期名稱 -->
                             <div class="calendar-grid mb-1">
-                                <div class="calendar-day-name">日</div> <div class="calendar-day-name">一</div> <div class="calendar-day-name">二</div> <div class="calendar-day-name">三</div> <div class="calendar-day-name">四</div> <div class="calendar-day-name">五</div> <div class="calendar-day-name">六</div>
+                                <div class="calendar-day-name">日</div>
+                                <div class="calendar-day-name">一</div>
+                                <div class="calendar-day-name">二</div>
+                                <div class="calendar-day-name">三</div>
+                                <div class="calendar-day-name">四</div>
+                                <div class="calendar-day-name">五</div>
+                                <div class="calendar-day-name">六</div>
                             </div>
-                            <div id="calendar-days-grid" class="calendar-grid"></div>
+
+                            <!-- 日曆日期格 -->
+                            <div id="calendar-days-grid" class="calendar-grid">
+                                <!-- JS 會喺呢度填入日期 -->
+                            </div>
                         </div>
+
+                        <!-- 顯示已選中日期嘅行程 -->
                         <div id="selected-day-trips" class="mt-6">
                             <p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>
                         </div>
                     </div>
+
+                    <!-- Tab 2: 心水小店 (預設隱藏) -->
                     <div id="planner-places-content" class="hidden fade-in">
-                        <div id="favorited-places-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                        <div id="favorited-places-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- JS 會喺呢度填入小店卡片 -->
+                        </div>
                         <div id="no-favorited-places" class="hidden text-center py-16">
                             <p class="text-lg text-gray-600">你尚未加入任何心水小店。</p>
                             <p class="text-gray-500">喺「探索」頁面搵你鍾意嘅小店啦。</p>
                         </div>
                     </div>
                 `;
-                renderCalendar();
-                renderFavoritedPlaces(); 
                 
+                // 2. 呼叫 render 函數去填入內容
+                renderCalendar();
+                renderFavoritedPlaces(); // 即使隱藏都要渲染定
+                
+                // 3. 綁定 Tab 切換按鈕事件
                 const tabTrips = document.getElementById('planner-tab-trips');
                 const tabPlaces = document.getElementById('planner-tab-places');
                 const contentTrips = document.getElementById('planner-trips-content');
@@ -519,6 +554,7 @@
                     contentPlaces.classList.remove('hidden');
                 });
                 
+                // 4. 綁定月份切換按鈕事件
                 document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
                 document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
             }
@@ -530,23 +566,36 @@
             renderCalendar();
         }
 
-        // 渲染日曆 (不變)
+        // 渲染日曆 (使用上次修正後嘅版本)
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             if (!grid) return; 
+
             grid.innerHTML = ''; 
             const tripsContainer = document.getElementById('selected-day-trips');
             if (tripsContainer) {
                 tripsContainer.innerHTML = '<p class="text-gray-500 text-center">請點擊日曆上有標記嘅日期去睇你嘅行程。</p>'; 
             }
             selectedCalendarDate = null; 
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            const month = calendarMonth.getMonth(); const year = calendarMonth.getFullYear();
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const month = calendarMonth.getMonth();
+            const year = calendarMonth.getFullYear();
+
             document.getElementById('calendar-month-year').textContent = `${year}年 ${month + 1}月`;
+
             const firstDayOfMonth = new Date(year, month, 1);
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const startDayOfWeek = firstDayOfMonth.getDay(); 
-            for (let i = 0; i < startDayOfWeek; i++) grid.innerHTML += `<div class="calendar-day empty"></div>`;
+
+            // 1. 填入空白格
+            for (let i = 0; i < startDayOfWeek; i++) {
+                grid.innerHTML += `<div class="calendar-day empty"></div>`;
+            }
+
+            // 2. 檢查邊啲日子有行程
             const tripDatesInMonth = new Set();
             userTrips.forEach(trip => {
                 const tripDate = parseFirestoreDate(trip.tripDate);
@@ -554,15 +603,27 @@
                     tripDatesInMonth.add(tripDate.getDate());
                 }
             });
+
+            // 3. 填入日期格
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const yyyy = date.getFullYear(); const mm = String(date.getMonth() + 1).padStart(2, '0'); const dd = String(date.getDate()).padStart(2, '0');
+                
+                // [FIX] 用本地日期組合字串
+                const yyyy = date.getFullYear();
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
                 const dateString = `${yyyy}-${mm}-${dd}`; 
+                
                 let classes = 'calendar-day';
                 if (date.getTime() === today.getTime()) classes += ' today';
                 if (tripDatesInMonth.has(day)) classes += ' has-trip';
-                grid.innerHTML += `<div class="${classes}" data-date="${dateString}">${day}</div>`;
+
+                grid.innerHTML += `<div class="${classes}" data-date="${dateString}">
+                    ${day}
+                </div>`;
             }
+            
+            // 4. 綁定點擊事件
             grid.querySelectorAll('.calendar-day:not(.empty)').forEach(cell => {
                 cell.addEventListener('click', () => {
                     const dateStr = cell.dataset.date;
@@ -574,66 +635,110 @@
             });
         }
 
-        // 渲染選中日期嘅行程 (不變)
+        // 渲染選中日期嘅行程 (使用上次修正後嘅版本)
         function renderSelectedDayTrips(dateString) { 
             const container = document.getElementById('selected-day-trips');
+
             const tripsForDay = userTrips.filter(trip => {
                 const tripDate = parseFirestoreDate(trip.tripDate); 
                 if (!tripDate) return false;
-                const yyyy = tripDate.getFullYear(); const mm = String(tripDate.getMonth() + 1).padStart(2, '0'); const dd = String(tripDate.getDate()).padStart(2, '0');
+
+                const yyyy = tripDate.getFullYear();
+                const mm = String(tripDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(tripDate.getDate()).padStart(2, '0');
                 const tripDateString = `${yyyy}-${mm}-${dd}`;
+                
                 return tripDateString === dateString;
             });
+
             if (tripsForDay.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 text-center">呢一日冇行程。</p>`; return;
+                container.innerHTML = `<p class="text-gray-500 text-center">呢一日冇行程。</p>`;
+                return;
             }
+            
             container.innerHTML = tripsForDay.map(trip => `
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-4 fade-in">
                     <h3 class="text-xl font-bold mb-3">${trip.name}</h3>
                     <div class="space-y-3">
                         ${trip.items.length > 0 ? trip.items.map(item => `
                             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div> <p class="font-semibold">${item.name || item.title}</p> <p class="text-sm text-gray-500">${item.category}</p> </div>
-                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-gray-900"> 查看 </a>
-                            </div>`).join('') : '<p class="text-sm text-gray-500">呢個行程冇項目。</p>'}
+                                <div>
+                                    <p class="font-semibold">${item.name || item.title}</p>
+                                    <p class="text-sm text-gray-500">${item.category}</p>
+                                </div>
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-600 hover:text-gray-900">
+                                    查看
+                                </a>
+                            </div>
+                        `).join('') : '<p class="text-sm text-gray-500">呢個行程冇項目。</p>'}
                     </div>
-                </div>`).join('');
+                </div>
+            `).join('');
         }
         
-        // 讀取「行程」 (不變)
+        // 讀取「行程」
         function fetchUserTrips(userId) {
             if (!db) return;
             const q = query(collection(db, "trips"), where("userId", "==", userId));
+            
             onSnapshot(q, (snapshot) => {
                 userTrips = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (document.getElementById('calendar-days-grid')) renderCalendar(); 
-            }, (error) => console.error("Error fetching user trips: ", error));
+                // 收到新 data 之後，重新渲染日曆 (如果日曆存在)
+                if (document.getElementById('calendar-days-grid')) {
+                    renderCalendar(); 
+                }
+            }, (error) => {
+                console.error("Error fetching user trips: ", error);
+            });
         }
         
-        // 讀取「心水小店」 (不變)
+        // ▼▼▼ 新增：讀取「心水小店」 ▼▼▼
         function fetchUserFavoritedPlaces(userId) {
             if (!db) return;
             const q = query(collection(db, "favoritedPlaces"), where("userId", "==", userId));
+            
             onSnapshot(q, (snapshot) => {
                 userFavoritedPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                userFavoritedPlaces.sort((a, b) => (parseFirestoreDate(b.createdAt) || 0) - (parseFirestoreDate(a.createdAt) || 0));
-                if (document.getElementById('favorited-places-grid')) renderFavoritedPlaces();
-            }, (error) => console.error("Error fetching user favorited places: ", error));
+                
+                // 喺 JS 排序 (避免 Firestore 索引問題)
+                userFavoritedPlaces.sort((a, b) => {
+                    const dateA = parseFirestoreDate(a.createdAt) || 0;
+                    const dateB = parseFirestoreDate(b.createdAt) || 0;
+                    return dateB - dateA; // 最新喺最前
+                });
+
+                // 收到新 data 之後，重新渲染心水小店列表
+                if (document.getElementById('favorited-places-grid')) {
+                    renderFavoritedPlaces();
+                }
+            }, (error) => {
+                console.error("Error fetching user favorited places: ", error);
+            });
         }
         
-        // 渲染「心水小店」列表 (不變)
+        // ▼▼▼ 新增：渲染「心水小店」列表 ▼▼▼
         function renderFavoritedPlaces() {
             const grid = document.getElementById('favorited-places-grid');
             const noResultsEl = document.getElementById('no-favorited-places');
-            if (!grid || !noResultsEl) return; 
+            if (!grid || !noResultsEl) return; // 如果唔喺 planner-page，就退出
+
             if (userFavoritedPlaces.length === 0) {
-                grid.innerHTML = ''; noResultsEl.classList.remove('hidden'); return;
+                grid.innerHTML = '';
+                noResultsEl.classList.remove('hidden');
+                return;
             }
-            noResultsEl.classList.add('hidden'); grid.innerHTML = ''; 
+
+            noResultsEl.classList.add('hidden');
+            grid.innerHTML = ''; // 清空
+
             userFavoritedPlaces.forEach((fav, index) => {
-                const item = fav.placeData; if (!item) return;
-                const name = item.name; const color = stringToColor(name).substring(1);
+                const item = fav.placeData; // 數據儲存喺 placeData 裡面
+                if (!item) return;
+
+                const name = item.name;
+                const color = stringToColor(name).substring(1);
                 const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=raleway`;
+
                 const card = document.createElement('div');
                 card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
                 card.style.animationDelay = `${index * 50}ms`;
@@ -644,9 +749,12 @@
                         <h3 class="font-bold text-lg mt-1 tracking-tight">${name}</h3>
                         <p class="text-sm text-gray-500">${item.address || item.district}</p>
                         <div class="mt-auto pt-4">
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="view-details-btn block w-full text-center bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200"> 查看小店 </a>
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="view-details-btn block w-full text-center bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">
+                                查看小店
+                            </a>
                         </div>
-                    </div>`;
+                    </div>
+                `;
                 grid.appendChild(card);
             });
         }
@@ -654,12 +762,16 @@
         // `handleAddToTrip` (加入心水) (不變)
         function handleAddToTrip(item) {
             const user = auth?.currentUser;
-            if (!user) { alert("請先登入，才能規劃行程。"); handleSignIn(); return; }
+            if (!user) {
+                alert("請先登入，才能規劃行程。"); 
+                handleSignIn(); 
+                return;
+            }
             currentSuggestionItem = item;
             openSuggestionModal(item);
         }
         
-        // ▼▼▼ `openSuggestionModal` 已更新 (移除第二按鈕邏輯，調整主按鈕文字) ▼▼▼
+        // ▼▼▼ `openSuggestionModal` 已更新 (加入新按鈕邏輯) ▼▼▼
         function openSuggestionModal(item) {
             const isEvent = 'title' in item;
             const district = item.district;
@@ -680,13 +792,18 @@
             let suggestions = [];
             if (isEvent) {
                 suggestionTitle.textContent = '喺「' + district + '」附近嘅小店建議：';
-                suggestions = allPlaces.filter(place => place.district === district && place.id !== item.id);
+                suggestions = allPlaces.filter(place => 
+                    place.district === district && 
+                    place.id !== item.id
+                );
             } else {
-                suggestionTitle.textContent = '喺「' + district + '」附近嘅活動建議 (可選)：'; // 改提示文字
+                suggestionTitle.textContent = '喺「' + district + '」附近嘅活動建議：';
                 const today = new Date(); today.setHours(0,0,0,0);
                 suggestions = allEvents.filter(event => {
                     const eventEnd = parseFirestoreDate(event.end_date);
-                    return event.district === district && event.id !== item.id && eventEnd && eventEnd >= today;
+                    return event.district === district && 
+                           event.id !== item.id &&
+                           eventEnd && eventEnd >= today;
                 });
             }
             
@@ -695,33 +812,31 @@
                 suggestionList.innerHTML = suggestions.slice(0, 5).map(sug => `
                     <label class="suggestion-item cursor-pointer">
                         <input type="checkbox" name="suggestion" value="${sug.id}" data-type="${'title' in sug ? 'event' : 'place'}">
-                        <div> <p class="font-semibold">${sug.name || sug.title}</p> <p class="text-sm text-gray-600">${sug.category}</p> </div>
-                    </label>`).join('');
+                        <div>
+                            <p class="font-semibold">${sug.name || sug.title}</p>
+                            <p class="text-sm text-gray-600">${sug.category}</p>
+                        </div>
+                    </label>
+                `).join('');
             } else {
                 suggestionList.innerHTML = `<p class="text-sm text-gray-500 text-center p-4">喺呢個地區暫時冇其他建議。</p>`;
             }
 
-            // 4. 更新 *單一* 按鈕文字
+            // 4. ▼▼▼ 更新按鈕狀態 ▼▼▼
             if (isEvent) {
+                // 如果係活動，只顯示「建立行程」按鈕
                 suggestionConfirmBtn.textContent = '確認並建立行程';
+                suggestionConfirmBtn.classList.remove('hidden');
+                suggestionFavoriteOnlyBtn.classList.add('hidden');
             } else {
-                // 如果係小店，預設係「加入心水小店」，如果用戶勾選建議，文字會再變
-                suggestionConfirmBtn.textContent = '加入心水小店'; 
+                // 如果係小店，顯示 *兩個* 按鈕
+                suggestionConfirmBtn.textContent = '建立行程並加入';
+                suggestionFavoriteOnlyBtn.textContent = '僅加入心水小店';
+                suggestionConfirmBtn.classList.remove('hidden');
+                suggestionFavoriteOnlyBtn.classList.remove('hidden');
             }
-            suggestionConfirmBtn.classList.remove('hidden'); // 確保按鈕顯示
-
-            // ▼▼▼ 新增：監聽建議 checkbox 變化，動態改按鈕文字 ▼▼▼
-            suggestionList.querySelectorAll('input[name="suggestion"]').forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    const anyChecked = suggestionList.querySelector('input[name="suggestion"]:checked');
-                    if (!isEvent) { // 只喺小店模式下改文字
-                        suggestionConfirmBtn.textContent = anyChecked ? '建立行程並加入' : '加入心水小店';
-                    }
-                });
-            });
-            // ▲▲▲ 結束新增監聽器 ▲▲▲
             
-            // 5. 顯示彈窗
+            // 5. 顯示彈窗 (z-index 40)
             suggestionModalBackdrop.classList.remove('hidden');
             setTimeout(() => suggestionModalBackdrop.classList.remove('modal-enter'), 10);
         }
@@ -732,36 +847,34 @@
             setTimeout(() => suggestionModalBackdrop.classList.add('hidden'), 300);
         }
         
-        // ▼▼▼ `handleSuggestionConfirm` 已更新 (加入新邏輯) ▼▼▼
+        // 處理建議彈窗嘅「確認建立行程」按鈕 (不變)
         async function handleSuggestionConfirm() {
             const user = auth?.currentUser;
             if (!user || !currentSuggestionItem) return;
 
-            const isPlace = !('title' in currentSuggestionItem); // 檢查係咪小店
-            const checkedBoxes = suggestionList.querySelectorAll('input[name="suggestion"]:checked');
-            
-            // 新邏輯：如果係小店，而且冇勾選任何建議
-            if (isPlace && checkedBoxes.length === 0) {
-                await handleFavoritePlaceDirectly(); // 直接加入心水
-                return; // 結束函數
-            }
-
-            // --- 如果係活動，或者係小店但有勾選建議，就執行以下建立行程嘅邏輯 ---
-
             // 1. 準備行程項目
-            let tripItems = [formatItemForTrip(currentSuggestionItem)]; // 主項目
-            checkedBoxes.forEach(box => { // 加入已勾選建議
+            let tripItems = [];
+            // A. 加入主要項目
+            tripItems.push(formatItemForTrip(currentSuggestionItem));
+            
+            // B. 獲取並加入已勾選嘅建議
+            const checkedBoxes = suggestionList.querySelectorAll('input[name="suggestion"]:checked');
+            checkedBoxes.forEach(box => {
                 const id = box.value;
                 const type = box.dataset.type;
                 const sourceArray = (type === 'event') ? allEvents : allPlaces;
                 const suggestion = sourceArray.find(item => item.id === id);
-                if (suggestion) tripItems.push(formatItemForTrip(suggestion));
+                if (suggestion) {
+                    tripItems.push(formatItemForTrip(suggestion));
+                }
             });
 
             // 2. 決定行程名稱同日期
             const primaryItem = currentSuggestionItem;
             const isEvent = 'title' in primaryItem;
-            let tripName = ""; let tripDate = null;
+            let tripName = "";
+            let tripDate = null;
+            
             if (isEvent) {
                 tripName = primaryItem.title;
                 tripDate = parseFirestoreDate(primaryItem.start_date) || new Date();
@@ -769,43 +882,65 @@
                 tripName = `我嘅 ${primaryItem.name} 之旅`;
                 tripDate = new Date(); // 小店行程預設為今日
             }
-            tripDate.setHours(0,0,0,0); 
+            tripDate.setHours(0,0,0,0); // 確保係當日零時
 
             // 3. 儲存到 Firebase 嘅 "trips" collection
             try {
                 await addDoc(collection(db, "trips"), {
-                    userId: user.uid, name: tripName, createdAt: Timestamp.now(), 
-                    tripDate: Timestamp.fromDate(tripDate), items: tripItems 
+                    userId: user.uid,
+                    name: tripName,
+                    createdAt: Timestamp.now(), // 建立時間
+                    tripDate: Timestamp.fromDate(tripDate), // 行程日期 (用於日曆)
+                    items: tripItems // 包含所有項目嘅陣列
                 });
+                
                 console.log("New trip created!");
-                closeSuggestionModal(); closeModal(); 
+                closeSuggestionModal(); // 關閉建議彈窗
+                closeModal(); // 關閉詳情彈窗
+                
+                // 彈出提示並跳轉
                 alert("行程已成功建立！");
-                showPage('planner-page'); 
+                showPage('planner-page'); // 跳轉到「我的行程」頁面
+                
             } catch (e) {
                 console.error("Error creating new trip: ", e);
                 alert("建立行程時發生錯誤，請稍後再試。");
             }
         }
 
-        // ▼▼▼ 新增：直接加入心水小店嘅函數 (取代舊 handleFavoritePlaceOnly) ▼▼▼
-        async function handleFavoritePlaceDirectly() {
+        // ▼▼▼ 新增：處理「僅加入心水小店」按鈕 ▼▼▼
+        async function handleFavoritePlaceOnly() {
             const user = auth?.currentUser;
-            // 安全檢查，確保係小店
-            if (!user || !currentSuggestionItem || 'title' in currentSuggestionItem) return; 
+            if (!user || !currentSuggestionItem || 'title' in currentSuggestionItem) {
+                // 安全檢查，確保係小店
+                return;
+            }
 
             try {
                 // 儲存到 Firebase 嘅 "favoritedPlaces" collection
                 await addDoc(collection(db, "favoritedPlaces"), {
-                    userId: user.uid, placeId: currentSuggestionItem.id, 
-                    createdAt: Timestamp.now(), placeData: formatItemForTrip(currentSuggestionItem) 
+                    userId: user.uid,
+                    placeId: currentSuggestionItem.id,
+                    createdAt: Timestamp.now(),
+                    placeData: formatItemForTrip(currentSuggestionItem) // 儲存小店嘅基本資料
                 });
-                console.log("New place favorited directly!");
-                closeSuggestionModal(); closeModal(); 
+                
+                console.log("New place favorited!");
+                closeSuggestionModal(); // 關閉建議彈窗
+                closeModal(); // 關閉詳情彈窗
+                
                 alert("已成功加入心水小店！");
+                
+                // 跳轉到「我的行程」並自動切換到「心水小店」Tab
                 showPage('planner-page'); 
-                setTimeout(() => document.getElementById('planner-tab-places')?.click(), 100);
+                
+                // 俾少少時間等 DOM 畫完
+                setTimeout(() => {
+                    document.getElementById('planner-tab-places')?.click(); 
+                }, 100);
+
             } catch (e) {
-                console.error("Error favoriting place directly: ", e);
+                console.error("Error favoriting place: ", e);
                 alert("加入心水時發生錯誤，請稍後再試。");
             }
         }
@@ -813,39 +948,315 @@
         // 輔助函數：格式化 item (不變)
         function formatItemForTrip(item) {
             return {
-                id: item.id || null, name: item.name || item.title, category: item.category,
-                url: item.url, district: item.district, address: item.address || null
+                id: item.id || null,
+                name: item.name || item.title,
+                category: item.category,
+                url: item.url,
+                district: item.district,
+                address: item.address || null
             };
         }
         
-        // --- DATA FETCHING & RENDERING --- (以下函數不變)
+        // --- DATA FETCHING & RENDERING ---
         
-        function parseFirestoreDate(dateField) { /* ... */ }
-        function fetchData() { /* ... */ }
-        function stringToColor(str) { /* ... */ }
-        function populateSenses() { /* ... */ }
-        function populateDistricts() { /* ... */ }
-        function populateDateScroller() { /* ... */ }
-        function performSearch() { /* ... */ }
-        function renderResults(results) { /* ... */ }
-        function openModal(item) { /* ... */ }
-        function closeModal() { /* ... */ }
+        // 輔助函數：安全地解析 Firestore 日期 (使用上次修正後嘅版本)
+        function parseFirestoreDate(dateField) {
+            if (!dateField) return null;
+            if (typeof dateField.toDate === 'function') return dateField.toDate();
+            if (dateField instanceof Date) return dateField;
+            if (typeof dateField === 'string') {
+                const parts = dateField.split('-');
+                if (parts.length === 3) {
+                    const date = new Date(parts[0], parseInt(parts[1]) - 1, parseInt(parts[2]));
+                     if (!isNaN(date.getTime())) return date;
+                }
+                const d = new Date(dateField);
+                if (!isNaN(d.getTime())) return d;
+            }
+            console.warn("Could not parse date:", dateField);
+            return null;
+        }
+        
+        // 讀取 Events / Places (不變)
+        function fetchData() {
+            if (!db) {
+                console.error("Firestore DB not initialized.");
+                loader.style.display = 'none';
+                resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料 (DB Error)。</p>`;
+                return;
+            }
+            loader.style.display = 'block';
+            const handleSnapshot = (snapshot, type) => {
+                const dataArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (type === 'places') allPlaces = dataArray;
+                if (type === 'events') allEvents = dataArray;
+                populateDistricts();
+                performSearch();
+            };
+            const handleError = (type, error) => {
+                console.error(`Error fetching ${type}:`, error);
+                loader.style.display = 'none';
+                if (!resultsGrid.querySelector('.text-red-500')) {
+                    resultsGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">無法載入資料，請稍後再試。</p>`;
+                }
+            };
+            try {
+                onSnapshot(collection(db, "places"), (snap) => handleSnapshot(snap, 'places'), (err) => handleError('places', err));
+                onSnapshot(collection(db, "events"), (snap) => handleSnapshot(snap, 'events'), (err) => handleError('events', err));
+            } catch(e) {
+                console.error("Error setting up Firestore listeners:", e);
+                handleError("data", e);
+            }
+        }
+        
+        // (stringToColor, populateSenses, populateDistricts, populateDateScroller 函數不變)
+        function stringToColor(str) {
+            if (!str) return '#cccccc';
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            let color = '#';
+            for (let i = 0; i < 3; i++) {
+                let value = (hash >> (i * 8)) & 0xFF;
+                color += ('00' + value.toString(16)).substr(-2);
+            }
+            return color;
+        }
+        function populateSenses() {
+            sensesContainer.innerHTML = SENSES.map((sense, index) => 
+                `<button data-sense="${sense}" class="sense-btn border px-3 py-1.5 rounded-lg text-sm font-medium">${SENSES_ZH[index]}</button>`
+            ).join('');
+            sensesContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('sense-btn')) {
+                    e.target.classList.toggle('active');
+                    performSearch();
+                }
+            });
+        }
+        function populateDistricts() {
+            const currentSelection = districtSelect.value;
+            const districts = [...new Set([...allPlaces.map(p => p.district), ...allEvents.map(e => e.district)])].filter(Boolean).sort();
+            districtSelect.innerHTML = `<option value="all">所有地區</option>` + districts.map(d => `<option value="${d}">${d}</option>`).join('');
+            districtSelect.value = currentSelection;
+        }
+        function populateDateScroller() {
+            let buttonsHtml = `<button class="date-btn active" data-date="all">所有日子</button>`;
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            
+            for (let i = 0; i < 6; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                
+                const yyyy = date.getFullYear();
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
+                const dateString = `${yyyy}-${mm}-${dd}`;
+                
+                const day = date.getDate(); 
+                const weekday = weekdays[date.getDay()];
+                
+                buttonsHtml += `<button class="date-btn" data-date="${dateString}">${day} (${weekday})</button>`;
+            }
+            dateScroller.innerHTML = buttonsHtml;
+        }
 
-        // --- EVENT LISTENERS --- (移除 suggestionFavoriteOnlyBtn 監聽器)
+        // `performSearch` (使用上次修正後嘅版本)
+        function performSearch() {
+            const selectedSenses = Array.from(sensesContainer.querySelectorAll('.sense-btn.active')).map(btn => btn.dataset.sense);
+            const selectedDistrict = districtSelect.value;
+            const searchQuery = searchInput.value.toLowerCase();
+            const isEventMode = currentFilter === 'events';
+
+            let sourceData = isEventMode ? allEvents : allPlaces;
+
+            const filtered = sourceData.filter(item => {
+                const name = item.name || item.title;
+                if (!name) return false; 
+
+                const districtMatch = selectedDistrict === 'all' || item.district === selectedDistrict;
+                const senses = item.senses || item.selected_senses || '';
+                const sensesMatch = selectedSenses.length === 0 || selectedSenses.every(s => senses.includes(s));
+                const searchMatch = searchQuery === '' || name.toLowerCase().includes(searchQuery);
+
+                if (!districtMatch || !sensesMatch || !searchMatch) {
+                    return false;
+                }
+
+                if (isEventMode) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const eventEnd = parseFirestoreDate(item.end_date);
+                    
+                    if (eventEnd && eventEnd < today) {
+                        return false;
+                    }
+
+                    if (selectedDate !== 'all') {
+                        const eventStart = parseFirestoreDate(item.start_date);
+                        if (!eventStart) return false;
+
+                        const yyyy = eventStart.getFullYear();
+                        const mm = String(eventStart.getMonth() + 1).padStart(2, '0');
+                        const dd = String(eventStart.getDate()).padStart(2, '0');
+                        const eventStartDateString = `${yyyy}-${mm}-${dd}`;
+                        
+                        if (eventStartDateString !== selectedDate) {
+                             return false;
+                        }
+                    }
+                }
+                return true;
+            });
+
+            // 排序 (不變)
+            filtered.sort((a, b) => {
+                if (isEventMode) {
+                    const dateA = parseFirestoreDate(a.start_date)?.getTime() || Infinity;
+                    const dateB = parseFirestoreDate(b.start_date)?.getTime() || Infinity;
+                    return dateA - dateB;
+                } else {
+                    const dateA = parseFirestoreDate(a.created_at)?.getTime() || 0;
+                    const dateB = parseFirestoreDate(b.created_at)?.getTime() || 0;
+                    return dateB - dateA;
+                }
+            });
+
+            renderResults(filtered);
+        }
+
+        // (renderResults 函數不變, openModal 函數不變, closeModal 函數不變)
+        function renderResults(results) {
+            resultsGrid.innerHTML = '';
+            resultsCount.textContent = `顯示 ${results.length} 個結果`;
+            loader.style.display = 'none';
+            noResults.style.display = results.length === 0 ? 'block' : 'none';
+
+            results.forEach((item, index) => {
+                const isEvent = 'title' in item;
+                const name = item.name || item.title;
+                const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
+                const color = stringToColor(name).substring(1);
+                const placeholderImgUrl = `https://placehold.co/600x400/${color}/FFFFFF?text=${encodeURIComponent(name.charAt(0))}&font=raleway`;
+                const card = document.createElement('div');
+                card.className = 'result-card rounded-xl overflow-hidden flex flex-col fade-in';
+                card.style.animationDelay = `${index * 50}ms`;
+                card.innerHTML = `
+                    <div class="aspect-video bg-gray-100"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <p class="text-xs font-semibold text-gray-500">${item.category || (isEvent ? '活動' : '地點')}</p>
+                        <h3 class="font-bold text-lg mt-1 tracking-tight">${name}</h3>
+                        <p class="text-sm text-gray-500">${item.address || item.district}</p>
+                        <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
+                        <div class="mt-auto pt-4 flex gap-2">
+                            <button class="view-details-btn w-full bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200">${isEvent ? '查看活動' : '查看小店'}</button>
+                            <button title="加入心水行程" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                card.querySelector('.view-details-btn').addEventListener('click', () => openModal(item));
+                card.querySelector('.add-to-trip-btn').addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    handleAddToTrip(item);
+                });
+                resultsGrid.appendChild(card);
+            });
+        }
+        function openModal(item) {
+            const isEvent = 'title' in item;
+            const name = item.name || item.title;
+            const senses = (item.senses || item.selected_senses || '').split(',').map(s => s.trim()).filter(Boolean);
+            const color = stringToColor(name).substring(1);
+            const placeholderImgUrl = `https::/placehold.co/800x400/${color}/FFFFFF?text=${encodeURIComponent(name)}&font=raleway`;
+            
+            let eventDateStr = '';
+            if (isEvent) {
+                let startDate = parseFirestoreDate(item.start_date)?.toLocaleDateString('zh-HK') || '';
+                let endDate = parseFirestoreDate(item.end_date)?.toLocaleDateString('zh-HK') || '';
+                eventDateStr = `<p class="text-sm text-blue-600 font-semibold mt-2">${startDate}${endDate && endDate !== startDate ? ' - ' + endDate : ''}</p>`;
+            }
+
+            modalContent.innerHTML = `
+                <div class="relative">
+                    <button id="modal-close-btn" class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
+                    </button>
+                    <div class="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${placeholderImgUrl}" alt="${name}" class="w-full h-full object-cover"></div>
+                    <h3 class="font-bold text-xl sm:text-2xl tracking-tight">${name}</h3>
+                    <p class="text-gray-500 mt-1">${item.address || item.district}</p>
+                    ${eventDateStr}
+                    <div class="mt-4 pt-4 border-t flex flex-wrap gap-2">${senses.map(s => `<span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">${s}</span>`).join('')}</div>
+                    <p class="text-gray-600 mt-4">${item.description || '暫無描述。'}</p>
+                    <div class="mt-6 flex gap-2">
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="w-full bg-gray-800 text-white text-center font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors">${isEvent ? '前往活動網站' : '前往小店網站'}</a>
+                        <button title="加入心水行程" id="modal-add-to-trip-btn" class="add-to-trip-btn flex-shrink-0 bg-gray-100 text-gray-600 p-3 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            modalBackdrop.classList.remove('hidden');
+            setTimeout(() => modalBackdrop.classList.remove('modal-enter'), 10);
+            document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+            document.getElementById('modal-add-to-trip-btn').addEventListener('click', (e) => {
+                handleAddToTrip(item); 
+            });
+        }
+        function closeModal() {
+            modalBackdrop.classList.add('modal-enter');
+            setTimeout(() => modalBackdrop.classList.add('hidden'), 300);
+        }
+
+        // --- EVENT LISTENERS (基本不變) ---
         districtSelect.addEventListener('change', performSearch);
         searchInput.addEventListener('input', performSearch);
-        resultFilterButtons.forEach(button => { /* ... */ });
+        
+        resultFilterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                resultFilterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentFilter = button.dataset.filter;
+                dateScroller.classList.toggle('hidden', currentFilter !== 'events');
+                selectedDate = 'all';
+                dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                if (dateScroller.querySelector('.date-btn[data-date="all"]')) {
+                     dateScroller.querySelector('.date-btn[data-date="all"]').classList.add('active');
+                }
+                performSearch();
+            });
+        });
+        
         modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
-        tabButtons.forEach(button => { /* ... */ });
-        dateScroller.addEventListener('click', e => { /* ... */ });
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                showPage(button.dataset.page);
+            });
+        });
+
+        dateScroller.addEventListener('click', e => {
+            const target = e.target.closest('.date-btn'); 
+            if (target) {
+                dateScroller.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                target.classList.add('active');
+                selectedDate = target.dataset.date;
+                performSearch();
+            }
+        });
+        
+        // ▼▼▼ 更新：建議彈窗嘅監聽器 (已加入新按鈕) ▼▼▼
         suggestionModalCloseBtn.addEventListener('click', closeSuggestionModal);
         suggestionModalBackdrop.addEventListener('click', e => { if (e.target === suggestionModalBackdrop) closeSuggestionModal(); });
         suggestionConfirmBtn.addEventListener('click', handleSuggestionConfirm);
-        // 移除: suggestionFavoriteOnlyBtn.addEventListener('click', ...);
+        suggestionFavoriteOnlyBtn.addEventListener('click', handleFavoritePlaceOnly); // <-- 新增
+        // ▲▲▲ 結束更新監聽器 ▲▲▲
 
-        // --- INITIALIZATION --- (不變)
+        // --- INITIALIZATION ---
         if (db && auth) {
-            populateSenses(); populateDateScroller(); fetchData(); showPage('explore-page'); 
+            populateSenses();
+            populateDateScroller(); 
+            fetchData();
+            showPage('explore-page'); 
         } else {
              console.log("Firebase not ready, skipping initial data load and UI setup.");
         }
